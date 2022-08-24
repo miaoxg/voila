@@ -15,7 +15,6 @@ USERNAME = 'xiao20090813xiao@163.com' # 输入账号
 PASSWORD = 'sunsh1ne0sunny' # 输入密码
 PRODUCTWORD = 'red' #搜索商品关键词
 
-# 随机时间，防止过快被检测
 seconds = random.randint(1, 2)
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
@@ -33,9 +32,7 @@ time.sleep(seconds) #等待页面加载
 #    except selenium.common.exceptions.NoSuchElementException:
 #        print('NoSuchElementException')
 
-# time.sleep(seconds)
 wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id=\"app\"]/div/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/input"))).send_keys(USERNAME)
-# time.sleep(seconds)
 # wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id="'<value>'"]"))).send_keys(PASSWORD)
 wait.until(EC.presence_of_element_located((By.XPATH, "/html/body/div/div/div[2]/div[1]/div[2]/form/div[2]/div/div[1]/input"))).send_keys(PASSWORD)
 #wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#\31 Xncqr_xlAQipC6_VibTE'))).send_keys(PASSWORD)
