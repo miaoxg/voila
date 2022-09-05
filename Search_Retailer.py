@@ -110,76 +110,18 @@ def search_product():
         "discount":[]
     }
 
+    url = "https://creator.voila.love/_/voila/v2/retailers?page=1&count=30&sort=DEFAULT&weight=false&query=&isReturnAllData=true"
     try:
-        response = requests.post('https://creator.voila.love/_/voila/v2/product-gateway/search',cookies=requests_cookies,json=data,headers=headers)
+        response = requests.get(url,cookies=requests_cookies,headers=headers)
     except Exception as e:
         pushalert("6")
-
-    response_data = json.loads(response.text)
-    skuProductId =response_data.get('data')[0].get('sku').get('skuProductId')
-    spuProductId=response_data.get('data')[0].get('sku').get('spuProductId')
-    canonicalUrl=response_data.get('data')[0].get('sku').get('canonicalUrl')
-    price=response_data.get('data')[0].get('sku').get('price')
-    description=response_data.get('data')[0].get('sku').get('description')
-    retailer=response_data.get('data')[0].get('sku').get('retailer')
-    siteName=response_data.get('data')[0].get('sku').get('siteName')
-    title=response_data.get('data')[0].get('sku').get('title')
-    brandName=response_data.get('data')[0].get('sku').get('brandName')
-    images=response_data.get('data')[0].get('sku').get('resource')
-
-# def bio_add_product():
-
-    add_product_data={
-        "data": {
-            "type": "Product",
-            "data": {
-                "@type": "type.googleapis.com/chameleon.voila.v1.post.AddProductRequest",
-                "postId": "0",
-                "data": [
-                    {
-                        "skuId": skuProductId,
-                        "spuId": spuProductId,
-                        "canonicalUrl": canonicalUrl,
-                        "productInfo": {
-                            "title": title,
-                            "brandName": brandName,
-                            "desc": description,
-                            "images": images,
-                            "price": price,
-                            "retailer": retailer,
-                            # "retailer": "",
-                            "siteName": siteName
-                        },
-                        "from": "ProductFromWarehouse"
-
-                    }
-                ],
-                "verb": ""
-            }
-        }
-    }
-
-
-    try:
-        response = requests.post('https://creator.voila.love/_/voila/v2/feeds',cookies=requests_cookies,json=add_product_data,headers=headers)
-        addproduct_response_data = json.loads(response.text)
-        title = re.findall('title\': [\'|\"](.+?)[\'|\"],',str(response_data))
-    #     for i in title_list:
-    #         total_title_list.append(i)
-    #     total_statuscode_list.append(response.status_code)
-    except Exception as e:
-        pushalert("6")
-
-    if response.status_code == 200 and title != '':
-        pushalert('0')
+    repsonse_data=json.loads(response.text)
+    total_retailers=repsonse_data['pagination'].get('total')
+    if response.status_code == 200 and total_retailers> 30000:
+        pushalert("0")
     else:
         pushalert("7")
 
-
-
 if __name__ == "__main__":
     login_get_cookies()
-    while True:
-        search_product()
-        time.sleep(60)
-    driver.quit()
+    search_product()
