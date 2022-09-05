@@ -1,0 +1,4 @@
+selenium
+requests
+pushgateway_client
+webdriver_manager
