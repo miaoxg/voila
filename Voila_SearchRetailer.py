@@ -31,26 +31,24 @@ driver = webdriver.Chrome(options=chrome_options,service=Service(ChromeDriverMan
 # driver.maximize_window()
 wait = WebDriverWait(driver, 10)
 
-def pushalert(status="-1"):
+def pushalert(metric_name="test",metric_value="-1",job_name="job_name"):
     result = client.push_data(
         url="pushgateway.voiladev.xyz:32684",
-        metric_name="voila_addproduct_status",
-        metric_value=status,
-        job_name="voila_addproduct",
+        metric_name=metric_name,
+        metric_value=metric_value,
+        job_name=job_name,
         timeout=5,
         labels={
             "env": "prod"
         }
     )
 
-
-
 def login_get_cookies():
     # load page
     try:
         driver.get('https://creator.voila.love')
     except Exception as e:
-        pushalert("1")
+        pushalert("voila_searchretailer_status","1","voila_searchretailer")
         # exit()
     #等待页面加载
     time.sleep(seconds)
@@ -58,18 +56,18 @@ def login_get_cookies():
     try:
         wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id=\"app\"]/div/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/input"))).send_keys(USERNAME)
     except Exception as e:
-        pushalert("2")
+        pushalert("voila_searchretailer_status","2","voila_searchretailer")
         # exit()
     try:
         wait.until(EC.presence_of_element_located((By.XPATH, "/html/body/div/div/div[2]/div[1]/div[2]/form/div[2]/div/div[1]/input"))).send_keys(PASSWORD)
     except Exception as e:
-        pushalert("3")
+        pushalert("voila_searchretailer_status","3","voila_searchretailer")
         # exit()
     #click "SIGN IN" button
     try:
         wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#app > div > div.container__main > div.login > div.login-form > form > div:nth-child(3) > div > button'))).click()
     except Exception as e:
-        pushalert("4")
+        pushalert("voila_searchretailer_status","4","voila_searchretailer")
         # exit()
 
     #sleep必须要有，否则cookies获取不全
@@ -83,7 +81,7 @@ def login_get_cookies():
         return True
     else:
         # status=5 get cookies failed
-        pushalert("5")
+        pushalert("voila_searchretailer_status","5","voila_searchretailer")
 
 def search_product():
 
@@ -114,14 +112,19 @@ def search_product():
     try:
         response = requests.get(url,cookies=requests_cookies,headers=headers)
     except Exception as e:
-        pushalert("6")
+        pushalert("voila_searchretailer_status","6","voila_searchretailer")
     repsonse_data=json.loads(response.text)
     total_retailers=repsonse_data['pagination'].get('total')
-    if response.status_code == 200 and total_retailers> 30000:
-        pushalert("0")
+    # print("response.status_code is: ",response.status_code)
+    # print("total_retailers: ",total_retailers)
+    if response.status_code == 200 and total_retailers > 20000:
+        pushalert("voila_searchretailer_status","0","voila_searchretailer")
     else:
-        pushalert("7")
+        pushalert("voila_searchretailer_status","7","voila_searchretailer")
 
 if __name__ == "__main__":
     login_get_cookies()
-    search_product()
+    while True:
+        search_product()
+        time.sleep(60)
+    driver.quit()
