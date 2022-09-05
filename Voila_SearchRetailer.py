@@ -83,7 +83,7 @@ def login_get_cookies():
         # status=5 get cookies failed
         pushalert("voila_searchretailer_status","5","voila_searchretailer")
 
-def search_product():
+def search_retailers():
 
     headers = {
         "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
@@ -125,6 +125,6 @@ def search_product():
 if __name__ == "__main__":
     login_get_cookies()
     while True:
-        search_product()
+        search_retailers()
         time.sleep(60)
     driver.quit()
