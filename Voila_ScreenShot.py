@@ -10,33 +10,23 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from pushgateway_client import client
 import os
-from concurrent.futures import ThreadPoolExecutor
 
 
 download_path=os.popen("pwd").read().split('\n')[0] + '/vip_screenshot/'
-#os.system("mkdir -p " + "download_path" + " && find download_path -type f -ctime +7 -name \"*.png\" -exec rm {} \;")
 os.system( "mkdir -p " + download_path + " && find " + download_path + " -type f -ctime +7 -name \"*.png\" -exec rm {} \;")
 
-md5sum_result=[]
 
 seconds = random.randint(10, 15)
 chrome_options = Options()
+
 #不加载ui
 chrome_options.add_argument("--headless")
 
-#启动要放入函数中，否则while true再执行时因为前面已经driver.quit()浏览器已退出，无法再通过chromedriver发起新的链接
-#driver = webdriver.Chrome(options=chrome_options,service=Service(ChromeDriverManager().install()))
-#driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 driver = None
-#可控制窗口大小
-#driver.maximize_window()
 wait = WebDriverWait(driver, 20)
 
-#blogger=['tiamcintosh','sheldon']
-# blogger=['tiamcintosh']
-
 #订单量最多的10个博主
-blogger=['tiamcintosh','sheldon','clairesmanson','shaynehydn1','Mommaneedssomegrace','Simpleandsweetblog','oksarahpan','laurajfarr','itsjing','sarahbelleelizabeth']
+blogger=['tiamcintosh','sheldon','clairesmanson','styledbyblair','Mommaneedssomegrace','Simpleandsweetblog','oksarahpan','laurajfarr','itsjing','sarahbelleelizabeth']
 
 def pushalert(status="-1"):
     result = client.push_data(
@@ -56,6 +46,7 @@ def get_md5sum():
     # def get_md5sum(vip):
     vipa_screenshot_list = {}
     vipb_screenshot_list = {}
+    md5sum_result=[]
 
     #启动要放入函数中，否则while true再执行时因为前面已经driver.quit()浏览器已退出，无法再通过chromedriver发起新的链接
     driver = webdriver.Chrome(options=chrome_options,service=Service(ChromeDriverManager().install()))
@@ -63,52 +54,52 @@ def get_md5sum():
 
     for vipa in blogger:
         try:
-            print("vipa is: ",vipa)
+            print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"vipa is: ",vipa)
             url='https://voila.love/' + vipa + '/'
-            print("url is:",url)
+            print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"url is:",url)
             driver.get(url)
+            driver.execute_script('window.scrollBy(0, 1000)')
         except Exception as e:
             pushalert("1")
         # 等待页面加载
         time.sleep(seconds)
 
         now = str(int(time.time()))
-#        driver.get_screenshot_as_file(dir_path + "/vip_screenshot" + vipa + now + ".png")
-#        vip_md5sum=os.popen("md5sum ./vip_screenshot" + vipa + now + ".png | awk '{print $1}'").read().strip('\n')
         driver.get_screenshot_as_file(download_path + vipa + now + ".png")
-        vip_md5sum=os.popen("md5sum " + download_path  + vipa + now + ".png | awk '{print $1}'").read().strip('\n')
-        vipa_screenshot_list[vipa]=[now,vip_md5sum]
+        vipa_md5sum=os.popen("md5sum " + download_path  + vipa + now + ".png | awk '{print $1}'").read().strip('\n')
+        vipa_screenshot_list[vipa]=[now,vipa_md5sum]
 
 
     #生成快照的两次间隔
-    time.sleep(86400)
+    time.sleep(1800)
 
     for vipb in blogger:
         try:
-            print("vipb is ",vipb)
+            print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"vipb is ",vipb)
             url = 'https://voila.love/' + vipb + '/'
-            print("url is:", url)
+            print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"url is:", url)
             driver.get(url)
+            driver.execute_script('window.scrollBy(0, 1000)')
         except Exception as e:
             pushalert("1")
     # 等待页面加载
         time.sleep(seconds)
 
         now = str(int(time.time()))
-        driver.get_screenshot_as_file("./vip_screenshot" + vipb + now + ".png")
-        vipb_md5sum = os.popen("md5sum ./vip_screenshot" + vipb + now + ".png | awk '{print $1}'").read().strip('\n')
+        driver.get_screenshot_as_file(download_path + vipb + now + ".png")
+        vipb_md5sum = os.popen("md5sum " + download_path + vipb + now + ".png | awk '{print $1}'").read().strip('\n')
         vipb_screenshot_list[vipb] = [now, vipb_md5sum]
 
-    print("vipa_screenshot_list is: ",vipa_screenshot_list)
-    print("vipb_screenshot_list is: ", vipb_screenshot_list)
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"vipa_screenshot_list is: ",vipa_screenshot_list)
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"vipb_screenshot_list is: ", vipb_screenshot_list)
 
 
     for vip in blogger:
-        print ("vip is: ", vip)
-        print("vipa_screenshot_list.get(vip) is: ",vipa_screenshot_list.get(vip))
-        print("vipa_screenshot_list.get(vip)[1] is: ",vipa_screenshot_list.get(vip)[1])
-        print("vipb_screenshot_list.get(vip) is: ",vipb_screenshot_list.get(vip))
-        print("vipb_screenshot_list.get(vip)[1] is: ",vipb_screenshot_list.get(vip)[1])
+        print (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"vip is: ", vip)
+        print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"vipa_screenshot_list.get(vip) is: ",vipa_screenshot_list.get(vip))
+        print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"vipa_screenshot_list.get(vip)[1] is: ",vipa_screenshot_list.get(vip)[1])
+        print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"vipb_screenshot_list.get(vip) is: ",vipb_screenshot_list.get(vip))
+        print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"vipb_screenshot_list.get(vip)[1] is: ",vipb_screenshot_list.get(vip)[1])
         if vipa_screenshot_list.get(vip)[1] == vipb_screenshot_list.get(vip)[1]:
             md5sum_result.append("same")
             print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), "get result:" + vip + '_same')
