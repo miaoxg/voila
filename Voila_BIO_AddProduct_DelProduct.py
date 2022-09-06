@@ -113,17 +113,22 @@ def search_product():
     except Exception as e:
         pushalert("voila_addproduct_status", "6", "voila_addproduct")
 
-    response_data = json.loads(response.text)
-    skuProductId =response_data.get('data')[0].get('sku').get('skuProductId')
-    spuProductId=response_data.get('data')[0].get('sku').get('spuProductId')
-    canonicalUrl=response_data.get('data')[0].get('sku').get('canonicalUrl')
-    price=response_data.get('data')[0].get('sku').get('price')
-    description=response_data.get('data')[0].get('sku').get('description')
-    retailer=response_data.get('data')[0].get('sku').get('retailer')
-    siteName=response_data.get('data')[0].get('sku').get('siteName')
-    title=response_data.get('data')[0].get('sku').get('title')
-    brandName=response_data.get('data')[0].get('sku').get('brandName')
-    images=response_data.get('data')[0].get('sku').get('resource')
+    try:
+        response_data = json.loads(response.text)
+        skuProductId =response_data.get('data')[0].get('sku').get('skuProductId')
+        spuProductId=response_data.get('data')[0].get('sku').get('spuProductId')
+        canonicalUrl=response_data.get('data')[0].get('sku').get('canonicalUrl')
+        price=response_data.get('data')[0].get('sku').get('price')
+        description=response_data.get('data')[0].get('sku').get('description')
+        retailer=response_data.get('data')[0].get('sku').get('retailer')
+        siteName=response_data.get('data')[0].get('sku').get('siteName')
+        title=response_data.get('data')[0].get('sku').get('title')
+        brandName=response_data.get('data')[0].get('sku').get('brandName')
+        images=response_data.get('data')[0].get('sku').get('resource')
+    except TypeError as e:
+        print("TypeError is :",e)
+        # some var is None
+        pushalert("voila_addproduct_status", "7", "voila_addproduct")
 
 # def bio_add_product():
 
@@ -165,12 +170,12 @@ def search_product():
         id = addproduct_response_data['data'][0].get('id')
         print("id is: ",id)
     except Exception as e:
-        pushalert("voila_addproduct_status", "7", "voila_addproduct")
+        pushalert("voila_addproduct_status", "8", "voila_addproduct")
 
     if response.status_code == 200 and title != None and id != None:
         pushalert("voila_addproduct_status", "0", "voila_addproduct")
     else:
-        pushalert("voila_addproduct_status", "7", "voila_addproduct")
+        pushalert("voila_addproduct_status", "9", "voila_addproduct")
 
     time.sleep(30)
 
