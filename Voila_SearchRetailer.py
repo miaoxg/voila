@@ -111,10 +111,11 @@ def search_retailers():
     url = "https://creator.voila.love/_/voila/v2/retailers?page=1&count=30&sort=DEFAULT&weight=false&query=&isReturnAllData=true"
     try:
         response = requests.get(url,cookies=requests_cookies,headers=headers)
+        repsonse_data = json.loads(response.text)
+        total_retailers = repsonse_data['pagination'].get('total')
     except Exception as e:
         pushalert("voila_searchretailer_status","6","voila_searchretailer")
-    repsonse_data=json.loads(response.text)
-    total_retailers=repsonse_data['pagination'].get('total')
+        print("Error:[6]",e)
     # print("response.status_code is: ",response.status_code)
     # print("total_retailers: ",total_retailers)
     if response.status_code == 200 and total_retailers > 20000:
