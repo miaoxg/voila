@@ -51,7 +51,7 @@ def login_get_cookies():
     try:
         driver.get('https://creator.voila.love')
     except Exception as e:
-        pushalert("voila_addcollection_status", "1", "voila_addcollection")
+        pushalert("voila_addcollection_status", "1", "voila_adcollection")
         # exit()
     #等待页面加载
     time.sleep(seconds)
@@ -190,25 +190,23 @@ def list_products():
        uniqueCode = list_products_response_data[4].get('id')
        sourceId = list_products_response_data[4].get('data').get('id')
        type = list_products_response_data[4].get('type')
-       isDeleted = list_products_response_data[4].get('data').get('products')[1].get('sku').get('isDeleted')
+       # isDeleted = list_products_response_data[4].get('data').get('products')[1].get('sku').get('isDeleted')
+       if list_products_response_data[4].get('data').get('products')[1].get('sku').get('isDeleted') == 0:
+           isDeleted = bool(0)
+       elif list_products_response_data[4].get('data').get('products')[1].get('sku').get('isDeleted') == 1:
+           isDeleted = bool(1)
        feedCreateTime = time.strftime("%Y-%m-%d %H:%M", time.localtime(int(list_products_response_data[4].get('data').get('products')[1].get('sku').get('createdUtc'))))
     except Exception as e:
         pushalert("voila_addcollection_status", '14', "voila_addcollection")
         print("e is: ", e)
 
-    if list_products_response.status_code == 200 and  uniqueCode is True and sourceId is True and type is True and isDeleted == 0 and feedCreateTime is True:
+    if list_products_response.status_code == 200 and  uniqueCode is True and sourceId is True and type is True and feedCreateTime is True:
         print("list products successfully")
     else:
         pushalert("voila_add_collection_status", "15", "voila_add_collection")
 
 
 def add_product_to_collection():
-    # print("uniqueCode is ", uniqueCode)
-    # print("sourceId is ", sourceId)
-    # print("type is ", type)
-    # print("isDeleted is ", isDeleted)
-    # print("feedCreateTime is ", feedCreateTime)
-    # print("collection_id is ", collection_id)
 
     headers = {
         "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
@@ -233,8 +231,6 @@ def add_product_to_collection():
         ]
     }
 
-    print("data is :", data)
-
     url = "https://creator.voila.love/_/voila/v2/feeds/collection/content"
 
     try:
@@ -242,17 +238,40 @@ def add_product_to_collection():
     except Exception as e:
         pushalert("voila_addcollection_status", '7', "voila_addcollection")
 
-    add_product_to_collection_response_data=json.loads(response.text)
-    print("add_product_to_collection_response_data is: ", add_product_to_collection_response_data)
+    # add_product_to_collection_response_data=json.loads(response.text)
 
-    # if response.status_code == 200 and collection_id is True:
-    #     print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), "Generate collection id successfully", collection_id)
-    # else:
-    #     pushalert("voila_add_collection_status", "8", "voila_add_collection")
+    if response.status_code == 200:
+        print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), "Generate collection id successfully", collection_id)
+    else:
+        pushalert("voila_add_collection_status", "8", "voila_add_collection")
 
 
 def list_collection():
-    pass
+
+    headers = {
+        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
+        "sec-ch-ua-platform": "macOS",
+        "content-type": "application/json",
+        "referer": "https://creator.voila.love/bio/",
+        "origin": "https://creator.voila.love",
+        "authority": "creator.voila.love",
+        "accept": "*/*"
+    }
+
+    url = "https://creator.voila.love/_/voila/v2/feeds/collection?count=1&cursor=&isRetProduct=true&isSharePage=false&id=" + collection_id
+    try:
+        response=requests.get(url, cookies=requests_cookies, headers=headers)
+        id = json.loads(response.text).get('data').get('id')
+    except Exception as e:
+        pushalert("voila_addcollection_status", '13', "voila_addcollection")
+        print("e is: ", e)
+        print("id is:", id)
+
+
+    if response.status_code == 200 and id == collection_id:
+        print("list collection successfully: ", collection_id, id)
+    else:
+        pushalert("list_collection_status", "1" ,"deleete_collection")
 
 def delete_collection():
 
@@ -282,10 +301,10 @@ if __name__ == "__main__":
     login_get_cookies()
     generate_collection_id()
     bind_collection_id_name()
-    # time.sleep(20)
     get_userid()
     list_products()
     add_product_to_collection()
+    time.sleep(20)
     list_collection()
     delete_collection()
     #
