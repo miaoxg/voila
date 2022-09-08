@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.9
+#!/usr/bin/python3
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -150,4 +150,3 @@ if __name__ == "__main__":
         else:
             pushalert("3")
         print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"end#"*10)
-        time.sleep(10)
