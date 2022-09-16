@@ -31,7 +31,7 @@ def send_email(email_address=''):
     msg['From'] = format_addr('%s<%s>' % (EMAIL_HEADER, sender_addr))
     msg['To'] = format_addr('%s' % email_address)
     # msg['Cc'] = sender_addr
-    msg['Subject'] = Header("Password expiration reminder", 'utf-8').encode()
+    msg['Subject'] = Header("Password expiration remind", 'utf-8').encode()
     # expried_email_text = "Hi, " + user + "\nYour IPA password will be expried in 7 days or has already expried, please change your ipa password , if you have any problem , you can find out drictions by visting the site: https://leyk1tg9lp.larksuite.com/wiki/wikusW0k1v7R5QQRF5SCK0wvq1c#"
     expried_email_html = """\
     <html>
