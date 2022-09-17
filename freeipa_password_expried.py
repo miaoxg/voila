@@ -40,7 +40,7 @@ def send_email(email_address=''):
             <p>Hi,
                 <br>Your IPA password will be expried in 7 days or has already expried, please change your ipa password .
                     If you have any problem , you can find out drictions by visting the site below: <br>
-                    <a href="https://leyk1tg9lp.larksuite.com/wiki/wikusW0k1v7R5QQRF5SCK0wvq1c#J9RqGM">Click here</a> 
+                    <a href="https://leyk1tg9lp.larksuite.com/wiki/wikusW0k1v7R5QQRF5SCK0wvq1c#J9RqGM">Click here</a>
             </p>
         </body>
     </html>
@@ -66,7 +66,7 @@ while i < len(result_list):
         print(result_list[i].get('uid'), " is locked!")
     elif result_list[i].get('krbpasswordexpiration') is None:
         print(result_list[i].get('uid'), "密码永不过期")
-    elif int(result_list[i].get('krbpasswordexpiration')[0].get('__datetime__').split('Z')[0]) - now > 7 * 86400:
+    elif int(result_list[i].get('krbpasswordexpiration')[0].get('__datetime__').split('Z')[0]) - now > 7 * 1000000:
         pass
     else:
         send_email(result_list[i].get('mail')[0])
