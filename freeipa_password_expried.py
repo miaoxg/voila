@@ -32,13 +32,13 @@ def send_email(email_address=''):
     msg['To'] = format_addr('%s' % email_address)
     # msg['Cc'] = sender_addr
     msg['Subject'] = Header("Password expiration remind", 'utf-8').encode()
-    # expried_email_text = "Hi, " + user + "\nYour IPA password will be expried in 7 days or has already expried, please change your ipa password , if you have any problem , you can find out drictions by visting the site: https://leyk1tg9lp.larksuite.com/wiki/wikusW0k1v7R5QQRF5SCK0wvq1c#"
+    # expried_email_text = "Hi, " + user + "\nYour IPA password will  expried in 7 days or has already expried, please change your ipa password , if you have any problem , you can find out drictions by visting the site: https://leyk1tg9lp.larksuite.com/wiki/wikusW0k1v7R5QQRF5SCK0wvq1c#"
     expried_email_html = """\
     <html>
         <head></head>
         <body>
             <p>Hi,
-                <br>Your IPA password will be expried in 7 days or has already expried, please change your ipa password .
+                <br>Your IPA password will expire within 7 days or has already expired, please change your ipa password .
                     If you have any problem , you can find out drictions by visting the site below: <br>
                     <a href="https://leyk1tg9lp.larksuite.com/wiki/wikusW0k1v7R5QQRF5SCK0wvq1c#J9RqGM">Click here</a>
             </p>
