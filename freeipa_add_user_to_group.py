@@ -8,7 +8,8 @@ from email.utils import parseaddr, formataddr
 client = ClientMeta('ipa.voiladev.xyz', verify_ssl=False)
 client.login('miaoxiaoguang', 'M$@qenZ4#jzwC6gx')
 
-def add_user_to_group(email_address='', permission = ''):
+
+def add_user_to_group(email_address='', permission=[]):
     smtp_server = "smtp.larksuite.com"
     port = 465  # For starttls
     sender_addr = "miaoxiaoguang@voiladev.xyz"
@@ -28,8 +29,9 @@ def add_user_to_group(email_address='', permission = ''):
     msg['From'] = format_addr('%s<%s>' % (EMAIL_HEADER, sender_addr))
     msg['To'] = format_addr('%s' % email_address)
     # msg['Cc'] = sender_addr
-    msg['Subject'] = Header("Grantting Permissions Notification", 'utf-8').encode()
-    email_text = "Hi, " + user + "\nYou have been granted the permission " + str(permission).strip('[|').strip('"').strip(']') + \
+    msg['Subject'] = Header("Granting Permissions Notification", 'utf-8').encode()
+    email_text = "Hi, " + user + "\nYou have been granted the permission " + \
+                 str(permission).strip('[|').strip('"').strip(']') + \
                 ", that means you can sign in some systems with " \
                 "your ipa username and password. You can find more details by visiting：" \
                 "https://leyk1tg9lp.larksuite.com/wiki/wikusr6L09hPkmr2uPBeiQSpY2e#7GbE8c "
@@ -45,6 +47,7 @@ def add_user_to_group(email_address='', permission = ''):
         s.quit()
     except Exception as e:
         print(e)
+
 
 if __name__ == '__main__':
     add_user_to_group(email_address="xiao20090813xiao@163.com", permission=['operator', 'data'])
