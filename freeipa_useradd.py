@@ -20,7 +20,7 @@ def GenPassword(length):
     chars = string.ascii_letters + string.digits
     user_password = random.choice(string.ascii_letters) + ''.join([random.choice(chars) for i in range(length)])
 
-def add_user(email_address='',firstname='', lastname='', fullname=''):
+def add_user(email_address='',firstname='', lastname='', fullname='', permission = ''):
     global user_password
     smtp_server = "smtp.larksuite.com"
     port = 465  # For starttls
@@ -31,13 +31,11 @@ def add_user(email_address='',firstname='', lastname='', fullname=''):
     EMAIL_HEADER = 'IPA Admin'
     user = email_address.split('@')[0]
 
-    # client.user_add(user, 'xiaoguang', 'miao', 'xiaoguangmiao', o_preferredlanguage='EN',
-    #                 o_krbpasswordexpiration=password_expiration_time_format, o_mail=email_address,
-    #                 o_userpassword=user_password)
     client.user_add(user, firstname, lastname, fullname, o_preferredlanguage='EN',
                     o_krbpasswordexpiration=password_expiration_time_format, o_mail=email_address,
                     o_userpassword=user_password)
-    client.group_add_member('operator', o_user=user)
+    for i in permission:
+        client.group_add_member(i, o_user=user)
 
     def format_addr(s):
         name, addr = parseaddr(s)
@@ -48,11 +46,11 @@ def add_user(email_address='',firstname='', lastname='', fullname=''):
     # msg['Cc'] = sender_addr
     msg['Subject'] = Header("欢迎加入Voila大家庭", 'utf-8').encode()
     email_text = "Hi, " + user + "\nYour IPA username is: " + user + ", password is: " + user_password + \
-                         "\nUsing the username and password you can login almost all of our systems." + \
-                         " If you have any problem , you can find out drictions by visting the site: " \
-                         "https://leyk1tg9lp.larksuite.com/wiki/wikusr6L09hPkmr2uPBeiQSpY2e \n" \
-                         "Please do not use the email: " + email_address + " to register https://creator.voila.love or " \
-                         "https://creator.voiladev.xyz!"
+                 "\nUsing the username and password you can login in almost all of our systems." + \
+                 " As a freshman in Voila, you can get a quick start by visting the site: " \
+                 "https://leyk1tg9lp.larksuite.com/wiki/wikusr6L09hPkmr2uPBeiQSpY2e \n" \
+                 "[Notice]: Please do not use the email: " + email_address + " to register https://creator.voila.love or " \
+                 "https://creator.voiladev.xyz !!!"
 
     plain_content = MIMEText(email_text, 'plain')
 
@@ -68,4 +66,4 @@ def add_user(email_address='',firstname='', lastname='', fullname=''):
 
 if __name__ == '__main__':
     GenPassword(15)
-    add_user(email_address="xiao20090813xiao@163.com", firstname='xiaoguang', lastname='miao', fullname='xiaoguangmiao')
+    add_user(email_address="xiao20090813xiao@163.com", firstname='xiaoguang', lastname='miao', fullname='xiaoguangmiao', permission=['vpn', 'data'])
