@@ -1,6 +1,6 @@
 from python_freeipa import ClientMeta
-import time
-from datetime import datetime
+import random, string
+import datetime
 import smtplib, ssl
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
@@ -9,11 +9,19 @@ from email.utils import parseaddr, formataddr
 
 client = ClientMeta('ipa.voiladev.xyz', verify_ssl=False)
 client.login('miaoxiaoguang', 'M$@qenZ4#jzwC6gx')
-result_list = client.user_find(o_sizelimit=200).get('result')
-now = int(datetime.now().strftime('%Y%m%d%H%M%S'))
-user = client.user_add('test3', 'John', 'Doe', 'John Doe', o_preferredlanguage='EN')
 
-def send_email(email_address=''):
+password_expiration_time = datetime.datetime.now() + datetime.timedelta(days=90)
+password_expiration_time_format = password_expiration_time.strftime("%Y%m%d%H%M%SZ")
+user_password = ""
+
+
+def GenPassword(length):
+    global user_password
+    chars = string.ascii_letters + string.digits
+    user_password = random.choice(string.ascii_letters) + ''.join([random.choice(chars) for i in range(length)])
+
+def add_user(email_address='',firstname='', lastname='', fullname=''):
+    global user_password
     smtp_server = "smtp.larksuite.com"
     port = 465  # For starttls
     sender_addr = "miaoxiaoguang@voiladev.xyz"
@@ -21,8 +29,15 @@ def send_email(email_address=''):
 
     msg = MIMEMultipart()
     EMAIL_HEADER = 'IPA Admin'
-    # email_address = ''
     user = email_address.split('@')[0]
+
+    # client.user_add(user, 'xiaoguang', 'miao', 'xiaoguangmiao', o_preferredlanguage='EN',
+    #                 o_krbpasswordexpiration=password_expiration_time_format, o_mail=email_address,
+    #                 o_userpassword=user_password)
+    client.user_add(user, firstname, lastname, fullname, o_preferredlanguage='EN',
+                    o_krbpasswordexpiration=password_expiration_time_format, o_mail=email_address,
+                    o_userpassword=user_password)
+    client.group_add_member('operator', o_user=user)
 
     def format_addr(s):
         name, addr = parseaddr(s)
@@ -31,31 +46,26 @@ def send_email(email_address=''):
     msg['From'] = format_addr('%s<%s>' % (EMAIL_HEADER, sender_addr))
     msg['To'] = format_addr('%s' % email_address)
     # msg['Cc'] = sender_addr
-    msg['Subject'] = Header("Password expiration remind", 'utf-8').encode()
-    # expried_email_text = "Hi, " + user + "\nYour IPA password will be expried in 7 days or has already expried, please change your ipa password , if you have any problem , you can find out drictions by visting the site: https://leyk1tg9lp.larksuite.com/wiki/wikusW0k1v7R5QQRF5SCK0wvq1c#"
-    expried_email_html = """\
-    <html>
-        <head></head>
-        <body>
-            <p>Hi,
-                <br>Your IPA password will be expried in 7 days or has already expried, please change your ipa password .
-                    If you have any problem , you can find out drictions by visting the site below: <br>
-                    <a href="https://leyk1tg9lp.larksuite.com/wiki/wikusW0k1v7R5QQRF5SCK0wvq1c#J9RqGM">Click here</a>
-            </p>
-        </body>
-    </html>
-    """
+    msg['Subject'] = Header("欢迎加入Voila大家庭", 'utf-8').encode()
+    email_text = "Hi, " + user + "\nYour IPA username is: " + user + ", password is: " + user_password + \
+                         "\nUsing the username and password you can login almost all of our systems." + \
+                         " If you have any problem , you can find out drictions by visting the site: " \
+                         "https://leyk1tg9lp.larksuite.com/wiki/wikusr6L09hPkmr2uPBeiQSpY2e \n" \
+                         "Please do not use the email: " + email_address + " to register https://creator.voila.love or " \
+                         "https://creator.voiladev.xyz!"
 
-    # plain_content = MIMEText(expried_email_text, 'plain')
-    html_content = MIMEText(expried_email_html, 'html')
+    plain_content = MIMEText(email_text, 'plain')
 
     # Try to log in to server and send email
     try:
-        # msg.attach(plain_content)
-        msg.attach(html_content)
+        msg.attach(plain_content)
         s = smtplib.SMTP_SSL(host=smtp_server, port=port)
         s.login(sender_addr, password)
         s.sendmail(sender_addr, email_address, msg.as_string())
         s.quit()
     except Exception as e:
         print(e)
+
+if __name__ == '__main__':
+    GenPassword(15)
+    add_user(email_address="xiao20090813xiao@163.com", firstname='xiaoguang', lastname='miao', fullname='xiaoguangmiao')
