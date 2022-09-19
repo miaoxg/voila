@@ -29,7 +29,7 @@ creatorId = ""
 
 
 def pushalert(metric_name="test", metric_value="-1", job_name="job_name"):
-    result=client.push_data(
+    result = client.push_data(
         url="pushgateway.voiladev.xyz:32684",
         metric_name=metric_name,
         metric_value=metric_value,
@@ -40,6 +40,7 @@ def pushalert(metric_name="test", metric_value="-1", job_name="job_name"):
         }
     )
 
+
 def login_get_cookies():
     # load page
     try:
@@ -47,7 +48,7 @@ def login_get_cookies():
     except Exception as e:
         pushalert("voila_bloggerdata_status", "1", "voila_bloggerdata")
         # exit()
-    #等待页面加载
+    # 等待页面加载
     time.sleep(seconds)
 
     try:
@@ -60,14 +61,14 @@ def login_get_cookies():
     except Exception as e:
         pushalert("voila_bloggerdata_status", "3", "voila_bloggerdata")
         # exit()
-    #click "SIGN IN" button
+    # click "SIGN IN" button
     try:
         wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#btnLogin'))).click()
     except Exception as e:
         pushalert("voila_bloggerdata_status", "4", "voila_bloggerdata")
         # exit()
 
-    #sleep必须要有，否则cookies获取不全
+    # sleep必须要有，否则cookies获取不全
     time.sleep(seconds)
 
     cookies = driver.get_cookies()
@@ -80,8 +81,8 @@ def login_get_cookies():
         # status=5 get cookies failed
         pushalert("voila_bloggerdata_status", "5", "voila_bloggerdata")
 
-def get_creatorId():
 
+def get_creatorId():
     global creatorId
 
     headers = {
@@ -146,6 +147,7 @@ def get_creatorId():
         print("response.status_code is :", response.status_code)
         print("creatorId is :", creatorId)
 
+
 def get_bloggerdata():
     pv_list = []
     uv_list = []
@@ -153,7 +155,7 @@ def get_bloggerdata():
     today = str(datetime.date.today()) + " 08:00:00"
     format_today = time.mktime(time.strptime(today, "%Y-%m-%d %H:%M:%S"))
     unix_today = str(format_today).split('.')[0]
-    unix_7_day_before = str(format_today - 86400*7).split('.')[0]
+    unix_7_day_before = str(format_today - 86400 * 7).split('.')[0]
 
     headers = {
         "authority": "dashboard.voila.love",
@@ -166,7 +168,7 @@ def get_bloggerdata():
 
     try:
         url = "https://dashboard.voila.love/_/voila/v2/metrics/user/core?beginDate=" + unix_7_day_before + "&endDate=" + unix_today + "&creatorId=" + creatorId
-        response = requests.get(url, cookies=requests_cookies , headers=headers)
+        response = requests.get(url, cookies=requests_cookies, headers=headers)
         response_data = json.loads(response.text).get("daily")
     except Exception as e:
         print(e)
@@ -177,12 +179,14 @@ def get_bloggerdata():
 
     print(pv_list, uv_list)
 
-    if response.status_code == 200 and pv_list.count(0) < 3 and uv_list.count(0) < 3 and len(uv_list) == 8 and len(pv_list) == 8:
+    if response.status_code == 200 and pv_list.count(0) < 3 and uv_list.count(0) < 3 and len(uv_list) == 8 and len(
+            pv_list) == 8:
         # pushalert()
         print("success")
     else:
         # pushalert()
         print("error")
+
 
 if __name__ == "__main__":
     login_get_cookies()

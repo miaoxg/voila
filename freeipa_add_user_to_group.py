@@ -32,9 +32,9 @@ def add_user_to_group(email_address='', permission=[]):
     msg['Subject'] = Header("Granting Permissions Notification", 'utf-8').encode()
     email_text = "Hi, " + user + "\nYou have been granted the permission " + \
                  str(permission).strip('[|').strip('"').strip(']') + \
-                ", that means you can sign in some systems with " \
-                "your ipa username and password. You can find more details by visiting：" \
-                "https://leyk1tg9lp.larksuite.com/wiki/wikusr6L09hPkmr2uPBeiQSpY2e#7GbE8c "
+                 ", that means you can sign in some systems with " \
+                 "your ipa username and password. You can find more details by visiting：" \
+                 "https://leyk1tg9lp.larksuite.com/wiki/wikusr6L09hPkmr2uPBeiQSpY2e#7GbE8c "
 
     plain_content = MIMEText(email_text, 'plain')
 

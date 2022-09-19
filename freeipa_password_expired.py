@@ -13,6 +13,7 @@ client.login('miaoxiaoguang', 'M$@qenZ4#jzwC6gx')
 result_list = client.user_find(o_sizelimit=200).get('result')
 now = int(datetime.now().strftime('%Y%m%d%H%M%S'))
 
+
 def send_email(email_address=''):
     smtp_server = "smtp.larksuite.com"
     port = 465  # For starttls
@@ -61,9 +62,10 @@ def send_email(email_address=''):
     except Exception as e:
         print(e)
 
+
 i = 0
 while i < len(result_list):
-    if  result_list[i].get('nsaccountlock') == True:
+    if result_list[i].get('nsaccountlock') == True:
         print(result_list[i].get('uid'), " is locked!")
     elif result_list[i].get('krbpasswordexpiration') is None:
         print(result_list[i].get('uid'), "密码永不过期")
@@ -71,6 +73,7 @@ while i < len(result_list):
         pass
     else:
         send_email(result_list[i].get('mail')[0])
-        print("Your passport will expried in 7 days : ", result_list[i].get('uid')[0], result_list[i].get('mail')[0], result_list[i].get('krbpasswordexpiration')[0].get('__datetime__'))
+        print("Your passport will expried in 7 days : ", result_list[i].get('uid')[0], result_list[i].get('mail')[0],
+              result_list[i].get('krbpasswordexpiration')[0].get('__datetime__'))
     i += 1
     time.sleep(0.2)

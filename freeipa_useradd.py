@@ -20,7 +20,8 @@ def GenPassword(length):
     chars = string.ascii_letters + string.digits
     user_password = random.choice(string.ascii_letters) + ''.join([random.choice(chars) for i in range(length)])
 
-def add_user(email_address='',firstname='', lastname='', fullname='', permission = ''):
+
+def add_user(email_address='', firstname='', lastname='', fullname='', permission=''):
     global user_password
     smtp_server = "smtp.larksuite.com"
     port = 465  # For starttls
@@ -50,7 +51,7 @@ def add_user(email_address='',firstname='', lastname='', fullname='', permission
                  " As a freshman in Voila, you can get a quick start by visting the site: " \
                  "https://leyk1tg9lp.larksuite.com/wiki/wikusr6L09hPkmr2uPBeiQSpY2e \n" \
                  "[Notice]: Please do not use the email: " + email_address + " to register https://creator.voila.love or " \
-                 "https://creator.voiladev.xyz !!!"
+                                                                             "https://creator.voiladev.xyz !!!"
 
     plain_content = MIMEText(email_text, 'plain')
 
@@ -64,6 +65,8 @@ def add_user(email_address='',firstname='', lastname='', fullname='', permission
     except Exception as e:
         print(e)
 
+
 if __name__ == '__main__':
     GenPassword(15)
-    add_user(email_address="xiao20090813xiao@163.com", firstname='xiaoguang', lastname='miao', fullname='xiaoguangmiao', permission=['vpn', 'data'])
+    add_user(email_address="xiao20090813xiao@163.com", firstname='xiaoguang', lastname='miao', fullname='xiaoguangmiao',
+             permission=['vpn', 'data'])
