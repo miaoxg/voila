@@ -30,7 +30,7 @@ def add_user_to_group(email_address='', permission=[]):
     msg['To'] = format_addr('%s' % email_address)
     # msg['Cc'] = sender_addr
     msg['Subject'] = Header("Granting Permissions Notification", 'utf-8').encode()
-    email_text = "Hi, " + user + "\nYou have been granted the permission " + \
+    email_text = "Hi, " + user + "\nYou have been granted the permission:" + \
                  str(permission).strip('[|').strip('"').strip(']') + \
                  ", that means you can sign in some systems with " \
                  "your ipa username and password. You can find more details by visiting：" \
