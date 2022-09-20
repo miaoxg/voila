@@ -12,6 +12,7 @@ from selenium.webdriver.chrome.options import Options
 import json
 import requests
 from pushgateway_client import client
+import threading
 
 USERNAME = 'xiao20090813xiao@163.com'
 PASSWORD = 'sunsh1ne0sunny'
@@ -90,6 +91,7 @@ def login_get_cookies():
     else:
         # status=5 get cookies failed
         pushalert("voila_addcollection_status", "5", "voila_addcollection")
+
 
 
 def generate_collection_id():
@@ -189,26 +191,53 @@ def list_products():
         "accept": "*/*"
     }
 
-    url = "https://creator.voila.love/_/voila/v2/feeds?count=15&cursor=&userId=" + userid + "&isRetProduct=true&isSharePage=false&collectionId=" + collection_id
+    url = "https://creator.voila.love/_/voila/v2/feeds?count=30&cursor=&userId=" + userid + "&isRetProduct=true&isSharePage=false&collectionId=" + collection_id
 
     try:
         list_products_response = requests.get(url, cookies=requests_cookies, headers=headers)
         list_products_response_data = json.loads(list_products_response.text).get("data")
 
-        # 取第5个post或product添加
-        uniqueCode = list_products_response_data[4].get('id')
-        sourceId = list_products_response_data[4].get('data').get('id')
-        type = list_products_response_data[4].get('type')
-        # isDeleted = list_products_response_data[4].get('data').get('products')[1].get('sku').get('isDeleted')
-        if list_products_response_data[4].get('data').get('products')[1].get('sku').get('isDeleted') == 0:
-            isDeleted = bool(0)
-        elif list_products_response_data[4].get('data').get('products')[1].get('sku').get('isDeleted') == 1:
-            isDeleted = bool(1)
-        feedCreateTime = time.strftime("%Y-%m-%d %H:%M", time.localtime(
-            int(list_products_response_data[4].get('data').get('products')[1].get('sku').get('createdUtc'))))
+# add product to collection
+#         i = 0
+#         while i < len(list_products_response_data):
+#             if list_products_response_data[i].get('type') == 'Product':
+#                 type = list_products_response_data[i].get('type')
+#                 uniqueCode = list_products_response_data[i].get('id')
+#                 sourceId = list_products_response_data[i].get('data').get('sku').get('sourceId')
+#                 feedCreateTime = time.strftime("%Y-%m-%d %H:%M", time.localtime(
+#                     int(list_products_response_data[i].get('data').get('sku').get('createdUtc'))))
+#                 if list_products_response_data[i].get('data').get('sku').get('isDeleted') == 0:
+#                     isDeleted = bool(0)
+#                 else:
+#                     isDeleted = bool(1)
+#                 break
+#             i += 1
+#     except Exception as e:
+#         pushalert("voila_addcollection_status", '14', "voila_addcollection")
+#         print("list_products e is: ", e)
+
+        i = 0
+        while i < len(list_products_response_data):
+            if list_products_response_data[i].get('type') == 'Post':
+                type = list_products_response_data[i].get('type')
+                uniqueCode = list_products_response_data[i].get('id')
+                sourceId = list_products_response_data[i].get('data').get('id')
+                feedCreateTime = time.strftime("%Y-%m-%d %H:%M", time.localtime(
+                    int(list_products_response_data[i].get('data').get('products')[0].get('sku').get('createdUtc'))))
+                if list_products_response_data[i].get('data').get('products')[0].get('sku').get('isDeleted') == 0:
+                    isDeleted = bool(0)
+                else:
+                    isDeleted = bool(1)
+                break
+            i += 1
     except Exception as e:
         pushalert("voila_addcollection_status", '14', "voila_addcollection")
-        print("e is: ", e)
+        print("list_products e is: ", e)
+    print("uniqueCode is",uniqueCode )
+    print("sourceId is",sourceId )
+    print("type is",type )
+    print("isDeleted is",isDeleted )
+    print("feedCreateTime is",feedCreateTime )
 
     if list_products_response.status_code == 200 and uniqueCode is True and sourceId is True and type is True and feedCreateTime is True:
         print("list products successfully")
@@ -247,6 +276,8 @@ def add_product_to_collection():
     except Exception as e:
         pushalert("voila_addcollection_status", '7', "voila_addcollection")
 
+    print("add_product_to_collection response.status_code is: ", response.status_code)
+
     # add_product_to_collection_response_data=json.loads(response.text)
 
     if response.status_code == 200:
@@ -274,12 +305,11 @@ def list_collection():
     except Exception as e:
         pushalert("voila_addcollection_status", '13', "voila_addcollection")
         print("e is: ", e)
-        print("id is:", id)
 
     if response.status_code == 200 and id == collection_id:
         print("list collection successfully: ", collection_id, id)
     else:
-        pushalert("list_collection_status", "1", "deleete_collection")
+        pushalert("list_collection_status", "1", "delete_collection")
 
 
 def delete_collection():
@@ -303,18 +333,18 @@ def delete_collection():
     if delete_response.status_code == 200:
         print("delete collection successfully: ", collection_id, collection_name)
     else:
-        pushalert("delete_collection_status", "1", "deleete_collection")
+        pushalert("delete_collection_status", "1", "delete_collection")
 
 
 if __name__ == "__main__":
     login_get_cookies()
-    generate_collection_id()
-    bind_collection_id_name()
-    get_userid()
-    list_products()
-    add_product_to_collection()
-    time.sleep(20)
-    list_collection()
-    delete_collection()
-    #
+    while True:
+        generate_collection_id()
+        bind_collection_id_name()
+        get_userid()
+        list_products()
+        add_product_to_collection()
+        time.sleep(20)
+        list_collection()
+        delete_collection()
     driver.quit()
