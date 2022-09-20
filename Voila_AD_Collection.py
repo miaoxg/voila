@@ -93,7 +93,6 @@ def login_get_cookies():
         pushalert("voila_addcollection_status", "5", "voila_addcollection")
 
 
-
 def generate_collection_id():
     global collection_id
 
@@ -197,24 +196,24 @@ def list_products():
         list_products_response = requests.get(url, cookies=requests_cookies, headers=headers)
         list_products_response_data = json.loads(list_products_response.text).get("data")
 
-# add product to collection
-#         i = 0
-#         while i < len(list_products_response_data):
-#             if list_products_response_data[i].get('type') == 'Product':
-#                 type = list_products_response_data[i].get('type')
-#                 uniqueCode = list_products_response_data[i].get('id')
-#                 sourceId = list_products_response_data[i].get('data').get('sku').get('sourceId')
-#                 feedCreateTime = time.strftime("%Y-%m-%d %H:%M", time.localtime(
-#                     int(list_products_response_data[i].get('data').get('sku').get('createdUtc'))))
-#                 if list_products_response_data[i].get('data').get('sku').get('isDeleted') == 0:
-#                     isDeleted = bool(0)
-#                 else:
-#                     isDeleted = bool(1)
-#                 break
-#             i += 1
-#     except Exception as e:
-#         pushalert("voila_addcollection_status", '14', "voila_addcollection")
-#         print("list_products e is: ", e)
+        # add product to collection
+        #         i = 0
+        #         while i < len(list_products_response_data):
+        #             if list_products_response_data[i].get('type') == 'Product':
+        #                 type = list_products_response_data[i].get('type')
+        #                 uniqueCode = list_products_response_data[i].get('id')
+        #                 sourceId = list_products_response_data[i].get('data').get('sku').get('sourceId')
+        #                 feedCreateTime = time.strftime("%Y-%m-%d %H:%M", time.localtime(
+        #                     int(list_products_response_data[i].get('data').get('sku').get('createdUtc'))))
+        #                 if list_products_response_data[i].get('data').get('sku').get('isDeleted') == 0:
+        #                     isDeleted = bool(0)
+        #                 else:
+        #                     isDeleted = bool(1)
+        #                 break
+        #             i += 1
+        #     except Exception as e:
+        #         pushalert("voila_addcollection_status", '14', "voila_addcollection")
+        #         print("list_products e is: ", e)
 
         i = 0
         while i < len(list_products_response_data):
@@ -233,11 +232,11 @@ def list_products():
     except Exception as e:
         pushalert("voila_addcollection_status", '14', "voila_addcollection")
         print("list_products e is: ", e)
-    print("uniqueCode is",uniqueCode )
-    print("sourceId is",sourceId )
-    print("type is",type )
-    print("isDeleted is",isDeleted )
-    print("feedCreateTime is",feedCreateTime )
+    print("uniqueCode is", uniqueCode)
+    print("sourceId is", sourceId)
+    print("type is", type)
+    print("isDeleted is", isDeleted)
+    print("feedCreateTime is", feedCreateTime)
 
     if list_products_response.status_code == 200 and uniqueCode is True and sourceId is True and type is True and feedCreateTime is True:
         print("list products successfully")
