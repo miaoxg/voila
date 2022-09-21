@@ -41,9 +41,9 @@ def send_email(email_address=''):
         <body>
             <p>Hi,
                 <br>Your IPA password will expire within 7 days or has already expired, please change your ipa password.
-                That means you can't login almost all of voila systems,such as https://dashboard.voiladev.xyz, https://git.voiladev.xyz and so on.
+                That means you can't login almost all of voila systems,such as https://dashboard.voila.love, https://git.voiladev.xyz and so on.
                 If you have any problem , you can find out drictions by visting the site below: <br>
-                <a href="https://leyk1tg9lp.larksuite.com/wiki/wikusW0k1v7R5QQRF5SCK0wvq1c#J9RqGM">Click here</a>
+                <a href="https://leyk1tg9lp.larksuite.com/wiki/wikusW0k1v7R5QQRF5SCK0wvq1c#J9RqGM">研发关注 - 内部开发平台介绍</a>
             </p>
         </body>
     </html>
