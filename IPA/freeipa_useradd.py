@@ -1,11 +1,13 @@
-from python_freeipa import ClientMeta
-import random, string
 import datetime
-import smtplib, ssl
+import random
+import smtplib
+import string
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
+
+from python_freeipa import ClientMeta
 
 client = ClientMeta('ipa.voiladev.xyz', verify_ssl=False)
 client.login('miaoxiaoguang', 'M$@qenZ4#jzwC6gx')
