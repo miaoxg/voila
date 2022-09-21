@@ -10,8 +10,7 @@ from python_freeipa import ClientMeta
 
 client = ClientMeta('ipa.voiladev.xyz', verify_ssl=False)
 client.login('miaoxiaoguang', 'M$@qenZ4#jzwC6gx')
-# user = client.user_add('test3', 'John', 'Doe', 'John Doe', o_preferredlanguage='EN')
-result_list = client.user_find(o_sizelimit=200).get('result')
+result_list = client.user_find(o_sizelimit=500).get('result')
 now = int(datetime.now().strftime('%Y%m%d%H%M%S'))
 
 
