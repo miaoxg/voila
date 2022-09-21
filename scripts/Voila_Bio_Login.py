@@ -1,18 +1,19 @@
 #!/usr/local/bin/python3.9
-import time
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-import random
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
 import json
-import requests
+import random
 import re
+import time
+
+import requests
 # from pushgateway_client import CollectorRegistry,Gauge,push_to_gateway,client
 from pushgateway_client import client
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 
 USERNAME = 'xiao20090813xiao@163.com'
 PASSWORD = 'sunsh1ne0sunny'

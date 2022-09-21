@@ -1,13 +1,14 @@
 #!/usr/local/bin/python3.9
+import random
 import time
+
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-import random
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
 
 USERNAME = 'xiao20090813xiao@163.com'
 PASSWORD = 'sunsh1ne0sunny'

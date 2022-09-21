@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import urllib
+
 import httplib2
 
 url = 'https://oauth.voila.love/auth'

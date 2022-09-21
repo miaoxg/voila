@@ -1,16 +1,17 @@
 #!/usr/local/bin/python3.9
 # coding=utf-8
 from __future__ import division
-import time
-from selenium import webdriver
-import random
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
-from pushgateway_client import client
+
 import os
-from concurrent.futures import ThreadPoolExecutor
+import random
+import time
+
+from pushgateway_client import client
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.wait import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 
 download_path = os.popen("pwd").read().split('\n')[0] + '/vip_screenshot/'
 # os.system("mkdir -p " + "download_path" + " && find download_path -type f -ctime +7 -name \"*.png\" -exec rm {} \;")

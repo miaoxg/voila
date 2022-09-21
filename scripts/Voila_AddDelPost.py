@@ -1,18 +1,18 @@
 #!/usr/local/bin/python3.9
 # coding=utf-8
+import json
+import random
 import time
+
+import requests
+from pushgateway_client import client
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-import random
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
-import json
-import requests
-import re
-from pushgateway_client import client
 
 USERNAME = 'xiao20090813xiao@163.com'
 PASSWORD = 'sunsh1ne0sunny'
