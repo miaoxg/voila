@@ -1,6 +1,7 @@
-from python_freeipa import ClientMeta
-import smtplib, ssl
 import time
+
+from python_freeipa import ClientMeta
+
 client = ClientMeta('ipa.voiladev.xyz', verify_ssl=False)
 client.login('miaoxiaoguang', 'M$@')
 # user = client.user_add('test3', 'John', 'Doe', 'John Doe', o_preferredlanguage='EN')
@@ -8,7 +9,7 @@ result_list = client.user_find(o_sizelimit=200).get('result')
 i = 0
 while i < len(result_list):
     # if  result_list[i].get('uid') != ['admin'] or result_list[i].get('nsaccountlock') == True :
-    if  result_list[i].get('nsaccountlock') == True:
+    if result_list[i].get('nsaccountlock') == True:
         # print(result_list[i].get('uid'), " is locked!")
         pass
     elif result_list[i].get('krbpasswordexpiration') is None:

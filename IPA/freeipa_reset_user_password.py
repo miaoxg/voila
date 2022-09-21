@@ -1,4 +1,6 @@
+import random
 import smtplib
+import string
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -10,7 +12,15 @@ client = ClientMeta('ipa.voiladev.xyz', verify_ssl=False)
 client.login('miaoxiaoguang', 'M$@qenZ4#jzwC6gx')
 
 
-def add_user_to_group(email_address='', permission=[]):
+def GenPassword(length):
+    global user_password
+    chars = string.ascii_letters + string.digits
+    user_password = random.choice(string.ascii_letters) + ''.join([random.choice(chars) for i in range(length)])
+
+
+def change_user_password():
+    global user_password
+    email_address = input('Please input your email: ')
     smtp_server = "smtp.larksuite.com"
     port = 465  # For starttls
     sender_addr = "miaoxiaoguang@voiladev.xyz"
@@ -20,8 +30,11 @@ def add_user_to_group(email_address='', permission=[]):
     EMAIL_HEADER = 'IPA Admin'
     user = email_address.split('@')[0]
 
-    for i in permission:
-        client.group_add_member(i, o_user=user)
+    # 初始化用户密码
+    client.user_mod(user, o_userpassword='vGSd833xc2vyJWkh')
+
+    # 通过初始化密码，给新密码
+    client.change_password(user, user_password, 'vGSd833xc2vyJWkh')
 
     def format_addr(s):
         name, addr = parseaddr(s)
@@ -30,12 +43,9 @@ def add_user_to_group(email_address='', permission=[]):
     msg['From'] = format_addr('%s<%s>' % (EMAIL_HEADER, sender_addr))
     msg['To'] = format_addr('%s' % email_address)
     # msg['Cc'] = sender_addr
-    msg['Subject'] = Header("Granting Permissions Notification", 'utf-8').encode()
-    email_text = "Hi, " + user + "\nYou have been granted the permission:" + \
-                 str(permission).strip('[|').strip('"').strip(']') + \
-                 ", that means you can sign in some systems with " \
-                 "your ipa username and password. You can find more details by visiting：" \
-                 "https://leyk1tg9lp.larksuite.com/wiki/wikusr6L09hPkmr2uPBeiQSpY2e#7GbE8c "
+    msg['Subject'] = Header("Resetting IPA Password Notification", 'utf-8').encode()
+    email_text = "Hi, " + user + "\nYour IPA username is: " + user + ", password is: " + user_password + \
+                 "\nUsing the username and password you can login in almost all of our systems."
 
     plain_content = MIMEText(email_text, 'plain')
 
@@ -51,4 +61,5 @@ def add_user_to_group(email_address='', permission=[]):
 
 
 if __name__ == '__main__':
-    add_user_to_group(email_address="tanwenrui@voiladev.xyz", permission=['operator'])
+    GenPassword(15)
+    change_user_password()
