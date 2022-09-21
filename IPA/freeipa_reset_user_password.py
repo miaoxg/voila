@@ -33,6 +33,8 @@ def change_user_password():
     # 初始化用户密码
     client.user_mod(user, o_userpassword='vGSd833xc2vyJWkh')
 
+    time.sleep(1)
+
     # 通过初始化密码，给新密码
     client.change_password(user, user_password, 'vGSd833xc2vyJWkh')
 
@@ -45,7 +47,8 @@ def change_user_password():
     # msg['Cc'] = sender_addr
     msg['Subject'] = Header("Resetting IPA Password Notification", 'utf-8').encode()
     email_text = "Hi, " + user + "\nYour IPA username is: " + user + ", password is: " + user_password + \
-                 "\nUsing the username and password you can login in almost all of our systems."
+                 "\nUsing the username and password you can login in almost all of our systems.You can find more details by visiting：" \
+                 "https://leyk1tg9lp.larksuite.com/wiki/wikusr6L09hPkmr2uPBeiQSpY2e#7GbE8c "
 
     plain_content = MIMEText(email_text, 'plain')
 
