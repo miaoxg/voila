@@ -14,15 +14,8 @@ import requests
 from pushgateway_client import client
 import threading
 
-
 USERNAME = 'xiao20090813xiao@163.com'
 PASSWORD = 'sunsh1ne0sunny'
-
-seconds = random.randint(5, 9)
-chrome_options = Options()
-chrome_options.add_argument("--headless")
-driver = webdriver.Chrome(options=chrome_options, service=Service(ChromeDriverManager().install()))
-wait = WebDriverWait(driver, 10)
 
 requests_cookies = {}
 collection_name = "test"
@@ -51,6 +44,16 @@ def pushalert(metric_name="test", metric_value="-1", job_name="job_name"):
 
 
 def login_get_cookies():
+    driver = ""
+    if driver:
+        driver.quit()
+
+    seconds = random.randint(5, 9)
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    driver = webdriver.Chrome(options=chrome_options, service=Service(ChromeDriverManager().install()))
+    wait = WebDriverWait(driver, 10)
+    print("begin get cookies")
     # load page
     try:
         driver.get('https://creator.voila.love')
@@ -88,10 +91,12 @@ def login_get_cookies():
         requests_cookies[c['name']] = c['value']
 
     if requests_cookies:
-        return True
+        print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), "requests_cookies is: ", requests_cookies)
     else:
         # status=5 get cookies failed
         pushalert("voila_addcollection_status", "5", "voila_addcollection")
+
+        time.sleep(30)
 
 
 def generate_collection_id():
@@ -169,6 +174,9 @@ def get_userid():
         userid = response_data.get('id')
     except Exception as e:
         pushalert("voila_add_collection_status", "12", "voila_add_collection")
+
+    print("get_userid userid is: ", userid)
+    print("get_userid response.status_code is: ", response.status_code)
 
     if userid is None or response.status_code != 200:
         pushalert("voila_add_collection_status", "13", "voila_add_collection")
@@ -307,6 +315,7 @@ def list_collection():
         print("e is: ", e)
 
     if response.status_code == 200 and id == collection_id:
+        pushalert("voila_add_collection_status", "0", "voila_add_collection")
         print("list collection successfully: ", collection_id, id)
     else:
         pushalert("list_collection_status", "1", "delete_collection")
@@ -327,24 +336,47 @@ def delete_collection():
     try:
         delete_response = requests.delete(url, cookies=requests_cookies, headers=headers)
     except Exception as e:
-        pushalert("voila_addcollection_status", '13', "voila_addcollection")
+        pushalert("voila_delcollection_status", '1', "delete_collection")
         print("e is: ", e)
 
     if delete_response.status_code == 200:
         print("delete collection successfully: ", collection_id, collection_name)
+        pushalert("delete_collection_status", "0", "delete_collection")
+
     else:
-        pushalert("delete_collection_status", "1", "delete_collection")
+        pushalert("delete_collection_status", "2", "delete_collection")
+
+
+def login():
+    while True:
+        login_get_cookies()
+
+
+def total():
+    while True:
+        if not requests_cookies:
+            time.sleep(60)
+        else:
+        # 每6天重新生成一次cookies
+            time.sleep(518400)
+
+        generate_collection_id()
+        time.sleep(10)
+        bind_collection_id_name()
+        time.sleep(10)
+        get_userid()
+        time.sleep(10)
+        list_products()
+        time.sleep(10)
+        add_product_to_collection()
+        time.sleep(10)
+        list_collection()
+        time.sleep(10)
+        delete_collection()
 
 
 if __name__ == "__main__":
-    login_get_cookies()
-    while True:
-        generate_collection_id()
-        bind_collection_id_name()
-        get_userid()
-        list_products()
-        add_product_to_collection()
-        time.sleep(20)
-        list_collection()
-        delete_collection()
-    driver.quit()
+    p1 = threading.Thread(target=login)
+    p2 = threading.Thread(target=total)
+    p1.start()
+    p2.start()

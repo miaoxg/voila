@@ -50,4 +50,4 @@ def add_user_to_group(email_address='', permission=[]):
 
 
 if __name__ == '__main__':
-    add_user_to_group(email_address="xiao20090813xiao@163.com", permission=['operator', 'data'])
+    add_user_to_group(email_address="yangyang@voiladev.xyz", permission=['operator'])
