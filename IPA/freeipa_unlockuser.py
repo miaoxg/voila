@@ -5,7 +5,7 @@ client.login('miaoxiaoguang', 'M$@qenZ4#jzwC6gx')
 
 
 def user_unlock():
-    email_address = input("输入待解锁的邮箱")
+    email_address = input("输入待解锁的邮箱: ")
     user = email_address.split('@')[0]
     client.user_unlock(user)
 
