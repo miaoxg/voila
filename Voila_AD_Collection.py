@@ -1,18 +1,19 @@
 #!/usr/local/bin/python3.9
 # coding=utf-8
-import time
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-import random
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
 import json
+import random
+import threading
+import time
+
 import requests
 from pushgateway_client import client
-import threading
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 
 USERNAME = 'xiao20090813xiao@163.com'
 PASSWORD = 'sunsh1ne0sunny'
@@ -199,7 +200,7 @@ def list_products():
         "accept": "*/*"
     }
 
-    url = "https://creator.voila.love/_/voila/v2/feeds?count=30&cursor=&userId=" + userid + "&isRetProduct=true&isSharePage=false&collectionId=" + collection_id
+    url = "https://creator.voila.love/_/voila/v2/feeds?count=10&cursor=&userId=" + userid + "&isRetProduct=true&isSharePage=false&collectionId=" + collection_id
 
     try:
         list_products_response = requests.get(url, cookies=requests_cookies, headers=headers)
@@ -353,7 +354,9 @@ def login():
 
 
 def total():
+
     while True:
+        # 解决第一次启动时login函数生成cookies在后，下列函数执行失败的问题
         if not requests_cookies:
             time.sleep(60)
         else:

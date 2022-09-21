@@ -1,9 +1,10 @@
-from python_freeipa import ClientMeta
 import smtplib
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
+
+from python_freeipa import ClientMeta
 
 client = ClientMeta('ipa.voiladev.xyz', verify_ssl=False)
 client.login('miaoxiaoguang', 'M$@qenZ4#jzwC6gx')
@@ -50,4 +51,4 @@ def add_user_to_group(email_address='', permission=[]):
 
 
 if __name__ == '__main__':
-    add_user_to_group(email_address="yangyang@voiladev.xyz", permission=['operator'])
+    add_user_to_group(email_address="tanwenrui@voiladev.xyz", permission=['operator'])
