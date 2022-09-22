@@ -1,4 +1,4 @@
-selenium
+selenium==4.1.3
 requests
 pushgateway_client
-webdriver_manager
+webdriver-manager==3.8.3
