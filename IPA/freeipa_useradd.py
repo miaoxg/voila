@@ -47,7 +47,7 @@ def add_user(email_address='', firstname='', lastname='', fullname='', permissio
     msg['From'] = format_addr('%s<%s>' % (EMAIL_HEADER, sender_addr))
     msg['To'] = format_addr('%s' % email_address)
     # msg['Cc'] = sender_addr
-    msg['Subject'] = Header("欢迎加入Voila大家庭", 'utf-8').encode()
+    msg['Subject'] = Header("Welcome to join Voilà!", 'utf-8').encode()
     email_text = "Hi, " + user + "\nYour IPA username is: " + user + ", password is: " + user_password + \
                  "\nUsing the username and password you can login in almost all of our systems." + \
                  " As a freshman in Voila, you can get a quick start by visting the site: " \
@@ -57,7 +57,7 @@ def add_user(email_address='', firstname='', lastname='', fullname='', permissio
 
     plain_content = MIMEText(email_text, 'plain')
 
-    # Try to log in to server and send email
+    # Try to login main server and send email
     try:
         msg.attach(plain_content)
         s = smtplib.SMTP_SSL(host=smtp_server, port=port)
