@@ -16,7 +16,7 @@ while i < len(result_list):
         pass
         # print(result_list[i].get('uid')[0], "密码永不过期")
     elif result_list[i].get("krbloginfailedcount") is not None:
-        print(result_list[i].get('uid')[0], result_list[i].get('mail')[0], "密码输入错误：",
+        print(result_list[i].get('uid')[0], result_list[i].get('mail')[0], "密码输入错误次数：",
               result_list[i].get("krbloginfailedcount")[0])
     elif int(result_list[i].get('krbpasswordexpiration')[0].get('__datetime__').split('Z')[0]) - now < 7 * 1000000:
         print(result_list[i].get('uid')[0], result_list[i].get('mail')[0], "密码即将到期",
