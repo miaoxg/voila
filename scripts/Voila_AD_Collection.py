@@ -52,6 +52,7 @@ def login_get_cookies():
     seconds = random.randint(5, 9)
     chrome_options = Options()
     chrome_options.add_argument("--headless")
+    chrome_options.add_argument('--disable-blink-features=AutomationControlled')  ## to avoid getting detected
     driver = webdriver.Chrome(options=chrome_options, service=Service(ChromeDriverManager().install()))
     wait = WebDriverWait(driver, 10)
     print("begin get cookies")

@@ -18,7 +18,7 @@ PRODUCTWORD = 'red'  # 搜索商品关键词
 seconds = random.randint(1, 2)
 chrome_options = Options()
 chrome_options.add_argument("--headless")
-
+chrome_options.add_argument('--disable-blink-features=AutomationControlled')  ## to avoid getting detected
 driver = webdriver.Chrome(options=chrome_options, service=Service(ChromeDriverManager().install()))
 # driver.maximize_window()
 wait = WebDriverWait(driver, 10)

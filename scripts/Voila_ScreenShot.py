@@ -24,7 +24,7 @@ seconds = random.randint(10, 15)
 chrome_options = Options()
 # 不加载ui
 chrome_options.add_argument("--headless")
-
+chrome_options.add_argument('--disable-blink-features=AutomationControlled')  ## to avoid getting detected
 # 启动要放入函数中，否则while true再执行时因为前面已经driver.quit()浏览器已退出，无法再通过chromedriver发起新的链接
 # driver = webdriver.Chrome(options=chrome_options,service=Service(ChromeDriverManager().install()))
 # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
