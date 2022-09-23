@@ -162,20 +162,22 @@ def search_add_product():
             brandName = response_data.get('data')[0].get('sku').get('brandName')
             images = response_data.get('data')[0].get('sku').get('resource')
 
-            logging.info(
-                'skuProductId is %s, spuProductId is %s, canonicalUrl is %s, price is %s, description is %s, retailer is %s, siteName is %s, title is %s, brandName is %s, images is %s',
-                skuProductId, spuProductId, canonicalUrl, price, description, retailer, siteName, title, brandName,
-                images)
+            # logging.info(
+            #     'skuProductId is %s, spuProductId is %s, canonicalUrl is %s, price is %s, description is %s, retailer is %s, siteName is %s, title is %s, brandName is %s, images is %s',
+            #     skuProductId, spuProductId, canonicalUrl, price, description, retailer, siteName, title, brandName,
+            #     images)
+            logging.info("search product generate parameters successfully.")
 
         except TypeError as e:
             logging.error("TypeError is :", e)
             # some var is None
             pushalert("voila_addproduct_status", "7", "voila_addproduct")
+            logging.info("search product generate parameters failed.")
 
         if response.status_code == 200:
             logging.info("search product successfully,status code is %s", response.status_code)
         else:
-            pushalert("voila_addproduct_status", "7", "voila_addproduct")
+            pushalert("voila_addproduct_status", "8", "voila_addproduct")
             logging.info("search product failed,status code is %s", response.status_code)
 
         # def bio_add_product():
@@ -218,14 +220,14 @@ def search_add_product():
             id = addproduct_response_data['data'][0].get('id')
             logging.info("id is: %s, title is %s, response.status_code is %s", id, title, response.status_code)
         except Exception as e:
-            pushalert("voila_addproduct_status", "8", "voila_addproduct")
+            pushalert("voila_addproduct_status", "9", "voila_addproduct")
             logging.info("e")
 
         if response.status_code == 200 and title != None and id != None:
             pushalert("voila_addproduct_status", "0", "voila_addproduct")
             logging.info("add product success")
         else:
-            pushalert("voila_addproduct_status", "9", "voila_addproduct")
+            pushalert("voila_addproduct_status", "10", "voila_addproduct")
             logging.info("add product failed")
 
         time.sleep(30)
@@ -244,7 +246,7 @@ def search_add_product():
             pushalert("voila_delproduct_status", "0", "voila_delproduct")
         else:
             logging.info("delete_response.status_code is %s", delete_response.status_code)
-            pushalert("voila_delproduct_status", "0", "voila_delproduct")
+            pushalert("voila_delproduct_status", "2", "voila_delproduct")
     time.sleep(20)
 
 
