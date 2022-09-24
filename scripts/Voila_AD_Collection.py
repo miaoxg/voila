@@ -114,8 +114,6 @@ def login_get_cookies():
         pushalert("voila_addcollection_status", "5", "voila_addcollection")
         logging.info("Generate cookies failed!")
 
-        time.sleep(30)
-
 
 def delete_all_collection():
     all_collection_id_list = []

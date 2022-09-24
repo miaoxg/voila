@@ -109,7 +109,7 @@ def login_get_cookies():
             pushalert("voila_searchproduct_status", "5", "voila_searchproduct")
             logging.info("Generate cookies failed!")
 
-    time.sleep(86400 * 6)
+        time.sleep(86400 * 6)
 
 
 def search_product():
