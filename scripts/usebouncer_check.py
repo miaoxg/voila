@@ -50,8 +50,7 @@ def useboncer_check():
 
         pushalert('available_email_num', available_email_num, 'usebouncer_check')
 
-        # time.sleep(1 * 60 * 60)
-        time.sleep(60)
+        time.sleep(1 * 60 * 60)
 
 
 if __name__ == '__main__':
