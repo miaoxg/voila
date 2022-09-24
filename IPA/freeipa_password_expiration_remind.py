@@ -9,7 +9,7 @@ from email.utils import parseaddr, formataddr
 from python_freeipa import ClientMeta
 
 client = ClientMeta('ipa.voiladev.xyz', verify_ssl=False)
-client.login('miaoxg', 'aSYsEoPZAmc3y7l5')
+client.login('miaoxiaoguang', 'M$@qenZ4#jzwC6gx')
 result_list = client.user_find(o_sizelimit=500).get('result')
 now = int(datetime.now().strftime('%Y%m%d%H%M%S'))
 
