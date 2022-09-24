@@ -8,7 +8,6 @@ import threading
 import time
 
 import requests
-# from pushgateway_client import CollectorRegistry,Gauge,push_to_gateway,client
 from pushgateway_client import client
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -46,9 +45,6 @@ def pushalert(metric_name="test", metric_value="-1", job_name="job_name"):
 
 def login_get_cookies():
     while True:
-        driver = ""
-        if driver:
-            driver.quit()
 
         seconds = random.randint(5, 9)
         chrome_options = Options()
@@ -70,7 +66,6 @@ def login_get_cookies():
             driver.get('https://creator.voila.love')
         except Exception as e:
             pushalert("voila_searchproduct_status", "1", "voila_searchproduct")
-            # exit()
         # 等待页面加载
         time.sleep(seconds)
 
@@ -80,7 +75,6 @@ def login_get_cookies():
                 USERNAME)
         except Exception as e:
             pushalert("voila_searchproduct_status", "2", "voila_searchproduct")
-            # exit()
         try:
             wait.until(EC.presence_of_element_located(
                 (By.XPATH, "/html/body/div/div/div[2]/div[1]/div[2]/form/div[2]/div/div[1]/input"))).send_keys(PASSWORD)
@@ -109,7 +103,8 @@ def login_get_cookies():
             pushalert("voila_searchproduct_status", "5", "voila_searchproduct")
             logging.info("Generate cookies failed!")
 
-        time.sleep(86400 * 6)
+        time.sleep(6 * 60 * 60)
+        driver.close()
 
 
 def search_product():

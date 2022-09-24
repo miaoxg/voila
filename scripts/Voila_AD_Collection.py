@@ -426,7 +426,8 @@ def login():
     while True:
         login_get_cookies()
         # 每6天重新生成一次cookies
-        time.sleep(518400)
+        time.sleep(6 * 60 * 60)
+        driver.close()
 
 
 def total():

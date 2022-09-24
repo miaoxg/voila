@@ -48,9 +48,6 @@ def pushalert(metric_name="test", metric_value="-1", job_name="job_name"):
 
 def login_get_cookies():
     while True:
-        driver = ""
-        if driver:
-            driver.quit()
 
         seconds = random.randint(5, 9)
         chrome_options = Options()
@@ -111,7 +108,8 @@ def login_get_cookies():
             pushalert("voila_addproduct_status", "5", "voila_addproduct")
             logging.info("Generate cookies failed!")
 
-        time.sleep(518400)
+        time.sleep(6 * 60 * 60)
+        driver.close()
 
 
 def search_add_product():
@@ -162,10 +160,6 @@ def search_add_product():
             brandName = response_data.get('data')[0].get('sku').get('brandName')
             images = response_data.get('data')[0].get('sku').get('resource')
 
-            # logging.info(
-            #     'skuProductId is %s, spuProductId is %s, canonicalUrl is %s, price is %s, description is %s, retailer is %s, siteName is %s, title is %s, brandName is %s, images is %s',
-            #     skuProductId, spuProductId, canonicalUrl, price, description, retailer, siteName, title, brandName,
-            #     images)
             logging.info("search product generate parameters successfully.")
 
         except TypeError as e:

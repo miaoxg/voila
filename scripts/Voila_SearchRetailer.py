@@ -42,10 +42,6 @@ def pushalert(metric_name="test", metric_value="-1", job_name="job_name"):
 
 def login_get_cookies():
     while True:
-        driver = ""
-        if driver:
-            driver.quit()
-
         seconds = random.randint(5, 9)
         chrome_options = Options()
         chrome_options.add_argument("--headless")
@@ -105,8 +101,8 @@ def login_get_cookies():
             pushalert("voila_searchretailer_status", "5", "voila_searchretailer")
             logging.info("Generate cookies failed: %s", requests_cookies)
 
-            time.sleep(6 * 60 * 60)
-
+        time.sleep(6 * 60 * 60)
+        driver.close()
 
 def search_retailers():
     while True:

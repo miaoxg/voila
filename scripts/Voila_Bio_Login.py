@@ -42,9 +42,6 @@ def pushalert(metric_name="test", metric_value="-1", job_name="job_name"):
 
 def login_get_cookies():
     while True:
-        driver = ""
-        if driver:
-            driver.quit()
 
         seconds = random.randint(5, 9)
         chrome_options = Options()
@@ -128,7 +125,8 @@ def login_get_cookies():
             logging.info("email is %s, response.status_code is %s,", email, response.status_code)
             logging.info("get user mail failed. email is %s, response.status_code is %s,", email, response.status_code)
 
-        time.sleep(60)
+        time.sleep(300)
+        drover.close()
 
 
 if __name__ == "__main__":
