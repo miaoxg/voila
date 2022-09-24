@@ -52,9 +52,6 @@ def pushalert(metric_name="test", metric_value="-1", job_name="job_name"):
 
 
 def login_get_cookies():
-    driver = ""
-    if driver:
-        driver.quit()
 
     seconds = random.randint(5, 9)
     chrome_options = Options()

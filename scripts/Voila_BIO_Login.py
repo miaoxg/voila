@@ -126,7 +126,7 @@ def login_get_cookies():
             logging.info("get user mail failed. email is %s, response.status_code is %s,", email, response.status_code)
 
         time.sleep(300)
-        drover.close()
+        driver.close()
 
 
 if __name__ == "__main__":
