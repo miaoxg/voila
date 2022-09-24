@@ -24,7 +24,6 @@ PASSWORD = 'aSYsEoPZAmc3y7l5'
 requests_cookies = {}
 
 blogger = "tiamcintosh"
-creatorId = ""
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(filename)s %(funcName)s：line %(lineno)d threadid %(thread)d %(levelname)s %(message)s",
@@ -68,32 +67,28 @@ def login_get_cookies():
         logging.info("begin get cookies")
         # load page
         try:
-            driver.get('https://creator.voila.love')
+            driver.get('https://dashboard.voila.love')
         except Exception as e:
-            pushalert("voila_searchproduct_status", "1", "voila_searchproduct")
+            pushalert("voila_bloggerdata_status", "1", "voila_bloggerdata")
             # exit()
         # 等待页面加载
         time.sleep(seconds)
 
         try:
-            wait.until(EC.presence_of_element_located(
-                (By.XPATH, "//*[@id=\"app\"]/div/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/input"))).send_keys(
-                USERNAME)
+            wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id=\"loginUserName\"]"))).send_keys(USERNAME)
         except Exception as e:
-            pushalert("voila_searchproduct_status", "2", "voila_searchproduct")
+            pushalert("voila_bloggerdata_status", "2", "voila_bloggerdata")
             # exit()
         try:
-            wait.until(EC.presence_of_element_located(
-                (By.XPATH, "/html/body/div/div/div[2]/div[1]/div[2]/form/div[2]/div/div[1]/input"))).send_keys(PASSWORD)
+            wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id=\"loginPassWord\"]"))).send_keys(PASSWORD)
         except Exception as e:
-            pushalert("voila_searchproduct_status", "3", "voila_searchproduct")
+            pushalert("voila_bloggerdata_status", "3", "voila_bloggerdata")
             # exit()
         # click "SIGN IN" button
         try:
-            wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,
-                                                   '#app > div > div.container__main > div.login > div.login-form > form > div:nth-child(3) > div > button'))).click()
+            wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#btnLogin'))).click()
         except Exception as e:
-            pushalert("voila_searchproduct_status", "4", "voila_searchproduct")
+            pushalert("voila_bloggerdata_status", "4", "voila_bloggerdata")
             # exit()
 
         # sleep必须要有，否则cookies获取不全
@@ -104,22 +99,24 @@ def login_get_cookies():
             requests_cookies[c['name']] = c['value']
 
         if requests_cookies:
-            logging.info('Generate cookies successfully!')
+            logging.info("generate requests_cookies successfully: %s", requests_cookies)
         else:
             # status=5 get cookies failed
-            pushalert("voila_searchproduct_status", "5", "voila_searchproduct")
-            logging.info("Generate cookies failed!")
+            pushalert("voila_bloggerdata_status", "5", "voila_bloggerdata")
+            logging.info("generate requests_cookies failed: %s", requests_cookies)
 
         time.sleep(86400 * 6)
 
 
 def get_bloggerdata():
-    global creatorId
+    creatorId = ""
     while True:
         pv_list = []
         uv_list = []
+
         if not requests_cookies:
-            time.sleep(60)
+            time.sleep(30)
+
         headers = {
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
             "sec-ch-ua-platform": "macOS",
@@ -174,14 +171,14 @@ def get_bloggerdata():
             response = requests.post(url, json=data, headers=headers, cookies=requests_cookies)
             creatorId = json.loads(response.text).get("users")[0].get('id')
         except Exception as e:
-            logging.info(e)
+            logging.info("error is", e)
 
         if response.status_code == 200 and creatorId:
-            logging.info("Get creatorid successfully. response.status_code is :%s, creatorId is :s%",
-                         response.status_code,
-                         creatorId)
+            logging.info("Get creatorId successfully. response.status_code is :%s, creatorId is :%s",
+                         response.status_code, creatorId)
         else:
-            logging.info("Get creatorid failed.response.status_code is :%s, creatorId is :%s", response.status_code,
+            pushalert("voila_bloggerdata_status", "6", "voila_bloggerdata")
+            logging.info("Get creatorid failed. response.status_code is :%s, creatorId is :%s", response.status_code,
                          creatorId)
 
         today = str(datetime.date.today()) + " 08:00:00"
@@ -209,15 +206,17 @@ def get_bloggerdata():
             pv_list.append(i.get("pv"))
             uv_list.append(i.get("uv"))
 
-        logging.info("pv_list is %s, uv_list is %s", pv_list, uv_list)
+        logging.info("get creatorID response.status_code is %s, pv_list is %s, uv_list is %s", response.status_code,
+                     pv_list, uv_list)
 
         if response.status_code == 200 and pv_list.count(0) < 3 and uv_list.count(0) < 3 and len(uv_list) == 8 and len(
                 pv_list) == 8:
-            # pushalert()
-            logging.info("get blogger %s's data success", blogger)
+            logging.info("get blogger %s pv/uv data success", blogger)
+            pushalert("voila_bloggerdata_status", "0", "voila_bloggerdata")
         else:
-            # pushalert()
-            logging.info("get blogger %s's data success", blogger)
+            logging.info("get blogger %s pv/uv data failed", blogger)
+            pushalert("voila_bloggerdata_status", "7", "voila_bloggerdata")
+
         time.sleep(50)
 
 
