@@ -112,7 +112,7 @@ def get_bloggerdata():
         uv_list = []
 
         if not requests_cookies:
-            time.sleep(30)
+            time.sleep(120)
 
         headers = {
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
