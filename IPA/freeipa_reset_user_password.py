@@ -21,7 +21,7 @@ def GenPassword(length):
 
 def change_user_password():
     global user_password
-    email_address = input('Please input your email: ')
+    email_address = "input('Please input your email: ')"
     smtp_server = "smtp.larksuite.com"
     port = 465  # For starttls
     sender_addr = "miaoxiaoguang@voiladev.xyz"
@@ -48,7 +48,7 @@ def change_user_password():
     # msg['Cc'] = sender_addr
     msg['Subject'] = Header("Resetting IPA Password Notification", 'utf-8').encode()
     email_text = "Hi, " + user + "\nYour IPA username is: " + user + ", password is: " + user_password + \
-                 "\nUsing the username and password you can login in almost all of our systems.You can find more details by visiting：" \
+                 "\nUsing the username and password you can login to almost all of our systems.You can find more details by visiting：" \
                  "https://leyk1tg9lp.larksuite.com/wiki/wikusr6L09hPkmr2uPBeiQSpY2e#7GbE8c "
 
     plain_content = MIMEText(email_text, 'plain')

@@ -49,7 +49,7 @@ def add_user(email_address='', firstname='', lastname='', fullname='', permissio
     # msg['Cc'] = sender_addr
     msg['Subject'] = Header("Welcome to join Voilà!", 'utf-8').encode()
     email_text = "Hi, " + user + "\nYour IPA username is: " + user + ", password is: " + user_password + \
-                 "\nUsing the username and password you can login in almost all of our systems." + \
+                 "\nUsing the username and password you can login to almost all of our systems." + \
                  " As a freshman in Voila, you can get a quick start by visting the site: " \
                  "https://leyk1tg9lp.larksuite.com/wiki/wikusr6L09hPkmr2uPBeiQSpY2e \n" \
                  "[Notice]: Please do not use the email: " + email_address + " to register https://creator.voila.love or " \
@@ -70,5 +70,5 @@ def add_user(email_address='', firstname='', lastname='', fullname='', permissio
 
 if __name__ == '__main__':
     GenPassword(15)
-    add_user(email_address="xiao20090813xiao@163.com", firstname='xiaoguang', lastname='miao', fullname='xiaoguangmiao',
-             permission=['vpn', 'data'])
+    add_user(email_address="amyzhou@voila.love", firstname='wenhui', lastname='zhou', fullname='wenhuizhou',
+             permission=['vpn', 'operator'])
