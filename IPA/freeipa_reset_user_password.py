@@ -21,7 +21,7 @@ def GenPassword(length):
 
 def change_user_password():
     global user_password
-    email_address = "input('Please input your email: ')"
+    email_address = input('Please input your email: ')
     smtp_server = "smtp.larksuite.com"
     port = 465  # For starttls
     sender_addr = "miaoxiaoguang@voiladev.xyz"

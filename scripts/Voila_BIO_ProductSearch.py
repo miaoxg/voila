@@ -25,6 +25,7 @@ PRODUCTWORD = ['red', 'red shirt', 'man', 'child']
 requests_cookies = {}
 
 logging.basicConfig(level=logging.INFO,
+                    filename='Voila_BIO_ProductSearch.log',
                     format="%(asctime)s %(filename)s %(funcName)s：line %(lineno)d threadid %(thread)d %(levelname)s %(message)s",
                     datefmt='%Y-%m-%d %H:%M:%S'
                     )
@@ -41,6 +42,26 @@ def pushalert(metric_name="test", metric_value="-1", job_name="job_name"):
             "env": "prod"
         }
     )
+
+
+def dellete_monitor_instance():
+    # 监控脚本运行前，先清理pushgateway中上由上一个监控实例推送的监控数据，以避免误报
+    response = requests.get('http://pushgateway.voiladev.xyz:32684/metrics')
+    content = str(response.content)
+    instance = re.findall(r'instance=[\'|\"](monitorscripts.+?)[\'|\"]', content)
+    uniq_instance = []
+    job_name = ["voila_searchproduct"]
+
+    # instance去重
+    for i in instance:
+        if i not in uniq_instance:
+            uniq_instance.append(i)
+    for job in job_name:
+        for j in uniq_instance:
+            url = "http://pushgateway.voiladev.xyz:32684/metrics/job/" + job + "/instance/" + j
+            response = request.get(url)
+            if response.status_code == 202:
+                logging.info("pushgateway job is %s, delete instance %s successfully", job, j)
 
 
 def login_get_cookies():
@@ -167,6 +188,7 @@ def search_product():
 
 
 if __name__ == "__main__":
+    dellete_monitor_instance()
     p1 = threading.Thread(target=login_get_cookies)
     p2 = threading.Thread(target=search_product)
     p1.start()
