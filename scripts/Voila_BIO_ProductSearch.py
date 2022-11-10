@@ -5,9 +5,9 @@ import platform
 import random
 import re
 import threading
-import time
 
 import requests
+import time
 from pushgateway_client import client
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -59,7 +59,7 @@ def dellete_monitor_instance():
     for job in job_name:
         for j in uniq_instance:
             url = "http://pushgateway.voiladev.xyz:32684/metrics/job/" + job + "/instance/" + j
-            response = request.get(url)
+            response = requests.get(url)
             if response.status_code == 202:
                 logging.info("pushgateway job is %s, delete instance %s successfully", job, j)
 

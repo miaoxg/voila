@@ -22,7 +22,7 @@ USERNAME = 'xiao20090813xiao@163.com'
 PASSWORD = 'sunsh1ne0sunny'
 
 logging.basicConfig(level=logging.INFO,
-                    filename="Voila_Search_ProductBrands.log",
+                    filename="Voila_BIO_ProductRecommend.log",
                     format="%(asctime)s %(filename)s %(funcName)s：line %(lineno)d threadid %(thread)d %(levelname)s %(message)s",
                     datefmt='%Y-%m-%d %H:%M:%S'
                     )
@@ -50,7 +50,7 @@ def dellete_monitor_instance():
         content = str(response.content)
         instance = re.findall(r'instance=[\'|\"](monitorscripts.+?)[\'|\"]', content)
         uniq_instance = []
-        job_name = ["voila_searchproductbrands"]
+        job_name = ["voila_productrecommend"]
 
         # instance去重
         for i in instance:
@@ -88,7 +88,7 @@ def login_get_cookies():
         try:
             driver.get('https://creator.voila.love')
         except Exception as e:
-            pushalert("voila_searchproductbrands_status", "1", "voila_searchproductbrands")
+            pushalert("voila_productrecommend_status", "1", "voila_productrecommend")
 
         # 等待页面加载
         time.sleep(seconds)
@@ -98,20 +98,20 @@ def login_get_cookies():
                 (By.XPATH, "//*[@id=\"app\"]/div/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/input"))).send_keys(
                 USERNAME)
         except Exception as e:
-            pushalert("voila_searchproductbrands_status", "2", "voila_searchproductbrands")
+            pushalert("voila_productrecommend_status", "2", "voila_productrecommend")
             # exit()
         try:
             wait.until(EC.presence_of_element_located(
                 (By.XPATH, "/html/body/div/div/div[2]/div[1]/div[2]/form/div[2]/div/div[1]/input"))).send_keys(PASSWORD)
         except Exception as e:
-            pushalert("voila_searchproductbrands_status", "3", "voila_searchproductbrands")
+            pushalert("voila_productrecommend_status", "3", "voila_productrecommend")
             # exit()
         # click "SIGN IN" button
         try:
             wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,
                                                    '#app > div > div.container__main > div.login > div.login-form > form > div:nth-child(3) > div > button'))).click()
         except Exception as e:
-            pushalert("voila_searchproductbrands_status", "4", "voila_searchproductbrands")
+            pushalert("voila_productrecommend_status", "4", "voila_productrecommend")
             # exit()
 
         # sleep必须要有，否则cookies获取不全
@@ -125,58 +125,85 @@ def login_get_cookies():
             logging.info('Generate cookies successfully: %s', requests_cookies)
         else:
             # status=5 get cookies failed
-            pushalert("voila_searchproductbrands_status", "5", "voila_searchproductbrands")
+            pushalert("voila_productrecommend_status", "5", "voila_productrecommend")
             logging.info("Generate cookies failed: %s", requests_cookies)
 
         time.sleep(6 * 60 * 60)
         driver.quit()
 
 
-def get_productretailers():
+def search_products():
     while True:
-        if not requests_cookies:
-            time.sleep(20)
         headers = {
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
             "sec-ch-ua-platform": "macOS",
-            "content-type": "application/json",
-            "referer": "https://creator.voila.love/bio/"
+            "content-type": "application/json"
         }
 
-        url = "https://creator.voila.love/_/voila/v2/brands"
+        data = {
+            "query": "",
+            "sort": "SortTypeDefault",
+            "page": 1,
+            "pageSize": 10,
+            "cursor": "",
+            "isCollect": "false",
+            "attributes": [],
+            "categoryIds": [],
+            "brands": [],
+            "retailers": [],
+            "price": {"min": 0, "max": 0},
+            "discount": []
+        }
+
         try:
-            response = requests.get(url, headers=headers, cookies=requests_cookies)
+            response = requests.post('https://creator.voila.love/_/voila/v2/product-gateway/search',
+                                     cookies=requests_cookies, json=data, headers=headers)
+            response_data = json.loads(response.text).get("data")[0].get("sku")
 
-            response_data = json.loads(response.text).get("data")
-
-            # logging.info("response_data.get(data) is %s, type is %s", response_data, type(response_data))
-
-            brands_num = len(response_data)
-            logging.info("brands_num is %s", brands_num)
-
-            i = 0
-            brands_name = []
-            while i < brands_num:
-                brands_name.append(response_data[i].get("brandName"))
-                i += 1
-            # logging.info("brands_name is %s", brands_name)
-
-            if brands_num > 900 and brands_name.count("") < 1 and response.status_code == 200:
-                pushalert("voila_searchproductbrands_status", "0", "voila_searchproductbrands")
-                logging.info("search product brands successfully")
+            skuId = response_data.get("skuId")
+            imageUrl = response_data.get("resource").get("medias")[0].get('detail').get('originalUrl')
+            title = response_data.get('title')
+            logging.info("skuId is %s, imageUrl is %s", skuId, imageUrl)
+            if skuId and imageUrl and title:
+                logging.info("generate skuId/imageUrl/title successfully")
             else:
-                pushalert("voila_searchproductbrands_status", "6", "voila_searchproductbrands")
-                logging.info("search product brands failed")
+                pushalert("voila_productrecommend_status", "6", "voila_productrecommend")
+                logging.info("generate skuID or imageUrl or title failed")
+
+            recommend_data = {
+                "page": 1,
+                "pageSize": 40,
+                "title": title,
+                "skuId": skuId,
+                "imageUrl": imageUrl,
+                "cursor": "",
+                "skuProductId": 0
+
+            }
+            recommend_response = requests.post("https://creator.voila.love/_/voila/v2/product-gateway/recommend",
+                                               cookies=requests_cookies, headers=headers, json=recommend_data)
+            recommend_response_data = json.loads(recommend_response.text)
+
+            recommend_skuId = recommend_response_data.get("data")[0].get("sku").get("skuId")
+
+            if recommend_response.status_code == 200 and recommend_skuId:
+                pushalert("voila_productrecommend_status", "0", "voila_productrecommend")
+                logging.info("success, recommend_response.status_code is %s, recommend_skuId is %s",
+                             recommend_response.status_code, recommend_skuId)
+            else:
+                pushalert("voila_productrecommend_status", "7", "voila_productrecommend")
+                logging.info("failed, recommend_response.status_code is %s, recommend_skuId is %s",
+                             recommend_response.status_code, recommend_skuId)
+
         except Exception as e:
             logging.info(e)
-            pushalert("voila_searchproductbrands_status", "7", "voila_searchproductbrands")
+            pushalert("voila_productrecommend_status", "8", "voila_productrecommend")
         time.sleep(50)
 
 
 if __name__ == "__main__":
     p1 = threading.Thread(target=login_get_cookies)
-    p2 = threading.Thread(target=get_productretailers)
-
+    p2 = threading.Thread(target=search_products)
     p1.start()
     p2.start()
     dellete_monitor_instance()
