@@ -4,10 +4,11 @@ import json
 import logging
 import platform
 import random
+import re
 import threading
+import time
 
 import requests
-import time
 from pushgateway_client import client
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -41,10 +42,10 @@ def pushalert(metric_name="test", metric_value="-1", job_name="job_name"):
     )
 
 
-def dellete_monitor_instance():
+def delete_monitor_instance():
     try:
         # 先起新pod，再删除旧pod，因此有可能出现此函数在新pod中执行后，旧pod仍未删除还在推送旧pod上的metric的情况,所以延迟300s后删除
-        time.sleep(300)
+        time.sleep(1800)
         # 监控脚本运行前，先清理pushgateway中上由上一个监控实例推送的监控数据，以避免误报
         response = requests.get('http://pushgateway.voiladev.xyz:32684/metrics')
         content = str(response.content)
@@ -128,7 +129,7 @@ def login_get_cookies():
             pushalert("voila_productrecommend_status", "5", "voila_productrecommend")
             logging.info("Generate cookies failed: %s", requests_cookies)
 
-        time.sleep(6 * 60 * 60)
+        time.sleep(60 * 60 * 24 * 6)
         driver.quit()
 
 
@@ -156,19 +157,24 @@ def search_products():
         }
 
         try:
+            if not requests_cookies:
+                time.sleep(60)
+
             response = requests.post('https://creator.voila.love/_/voila/v2/product-gateway/search',
                                      cookies=requests_cookies, json=data, headers=headers)
             response_data = json.loads(response.text).get("data")[0].get("sku")
+            logging.info("response_data is %s", response_data)
 
             skuId = response_data.get("skuId")
             imageUrl = response_data.get("resource").get("medias")[0].get('detail').get('originalUrl')
             title = response_data.get('title')
-            logging.info("skuId is %s, imageUrl is %s", skuId, imageUrl)
+
+            logging.info("skuId is %s, imageUrl is %s, title is %s", skuId, imageUrl, title)
             if skuId and imageUrl and title:
                 logging.info("generate skuId/imageUrl/title successfully")
             else:
                 pushalert("voila_productrecommend_status", "6", "voila_productrecommend")
-                logging.info("generate skuID or imageUrl or title failed")
+                logging.info("generate skuId or imageUrl or title failed")
 
             recommend_data = {
                 "page": 1,
@@ -182,9 +188,13 @@ def search_products():
             }
             recommend_response = requests.post("https://creator.voila.love/_/voila/v2/product-gateway/recommend",
                                                cookies=requests_cookies, headers=headers, json=recommend_data)
+            logging.info("recommend_response is %s", recommend_response)
+
             recommend_response_data = json.loads(recommend_response.text)
+            logging.info("recommend_response.text is %s", recommend_response.text)
 
             recommend_skuId = recommend_response_data.get("data")[0].get("sku").get("skuId")
+            logging.info("recommend_skuId is %s", recommend_skuId)
 
             if recommend_response.status_code == 200 and recommend_skuId:
                 pushalert("voila_productrecommend_status", "0", "voila_productrecommend")
@@ -198,7 +208,7 @@ def search_products():
         except Exception as e:
             logging.info(e)
             pushalert("voila_productrecommend_status", "8", "voila_productrecommend")
-        time.sleep(50)
+        time.sleep(1800)
 
 
 if __name__ == "__main__":
@@ -206,4 +216,4 @@ if __name__ == "__main__":
     p2 = threading.Thread(target=search_products)
     p1.start()
     p2.start()
-    dellete_monitor_instance()
+    delete_monitor_instance()

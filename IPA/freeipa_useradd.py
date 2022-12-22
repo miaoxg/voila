@@ -70,5 +70,5 @@ def add_user(email_address='', firstname='', lastname='', fullname='', permissio
 
 if __name__ == '__main__':
     GenPassword(15)
-    add_user(email_address="amyzhou@voila.love", firstname='wenhui', lastname='zhou', fullname='wenhuizhou',
-             permission=['vpn', 'operator'])
+    add_user(email_address="jobs@voila.love", firstname='hongguang', lastname='yin', fullname='hongguangyin',
+             permission=['operator', 'vpn'])

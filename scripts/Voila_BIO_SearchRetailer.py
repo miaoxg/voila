@@ -3,6 +3,7 @@ import json
 import logging
 import platform
 import random
+import re
 import threading
 import time
 
@@ -22,6 +23,7 @@ PASSWORD = 'sunsh1ne0sunny'
 requests_cookies = {}
 
 logging.basicConfig(level=logging.INFO,
+                    filename='Voila_BIO_SearchRetailer.log',
                     format="%(asctime)s %(filename)s %(funcName)s：line %(lineno)d threadid %(thread)d %(levelname)s %(message)s",
                     datefmt='%Y-%m-%d %H:%M:%S'
                     )
@@ -40,101 +42,135 @@ def pushalert(metric_name="test", metric_value="-1", job_name="job_name"):
     )
 
 
+def delete_monitor_instance():
+    try:
+        # 先起新pod，再删除旧pod，因此有可能出现此函数在新pod中执行后，旧pod仍未删除还在推送旧pod上的metric的情况,所以延迟300s后删除
+        time.sleep(300)
+        # 监控脚本运行前，先清理pushgateway中上由上一个监控实例推送的监控数据，以避免误报
+        response = requests.get('http://pushgateway.voiladev.xyz:32684/metrics')
+        content = str(response.content)
+        instance = re.findall(r'instance=[\'|\"](monitorscripts.+?)[\'|\"]', content)
+        uniq_instance = []
+        job_name = ["voila_searchretailer"]
+
+        # instance去重
+        for i in instance:
+            if i not in uniq_instance:
+                uniq_instance.append(i)
+        for job in job_name:
+            for j in uniq_instance:
+                url = "http://pushgateway.voiladev.xyz:32684/metrics/job/" + job + "/instance/" + j + "/env/prod"
+                response = requests.delete(url)
+                logging.info(
+                    "pushgateway job is %s, delete instance %s successfully, url is %s, response.status_code is %s",
+                    job, j, url, response.status_code)
+    except Exception as e:
+        logging.info(e)
+
+
 def login_get_cookies():
     while True:
-        seconds = random.randint(5, 9)
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument('--disable-blink-features=AutomationControlled')  ## to avoid getting detected
-
-        if platform.system() == "Linux":
-            chrome_options.add_argument('--remote-debugging-port=9228')
-            driver = webdriver.Chrome(options=chrome_options, executable_path='/usr/bin/chromedriver')
-        else:
-            driver = webdriver.Chrome(options=chrome_options, service=Service(ChromeDriverManager().install()))
-        wait = WebDriverWait(driver, 10)
-        logging.info("begin get cookies")
-        # load page
         try:
-            driver.get('https://creator.voila.love')
-        except Exception as e:
-            pushalert("voila_searchretailer_status", "1", "voila_searchretailer")
+            seconds = random.randint(5, 9)
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-extensions")
+            chrome_options.add_argument('--disable-blink-features=AutomationControlled')  ## to avoid getting detected
 
-        # 等待页面加载
-        time.sleep(seconds)
+            if platform.system() == "Linux":
+                chrome_options.add_argument('--remote-debugging-port=9228')
+                driver = webdriver.Chrome(options=chrome_options, executable_path='/usr/bin/chromedriver')
+            else:
+                driver = webdriver.Chrome(options=chrome_options, service=Service(ChromeDriverManager().install()))
+            wait = WebDriverWait(driver, 10)
+            logging.info("begin get cookies")
+            # load page
+            try:
+                driver.get('https://creator.voila.love')
+            except Exception as e:
+                pushalert("voila_searchretailer_status", "1", "voila_searchretailer")
 
-        try:
-            wait.until(EC.presence_of_element_located(
-                (By.XPATH, "//*[@id=\"app\"]/div/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/input"))).send_keys(
-                USERNAME)
-        except Exception as e:
-            pushalert("voila_searchretailer_status", "2", "voila_searchretailer")
-            # exit()
-        try:
-            wait.until(EC.presence_of_element_located(
-                (By.XPATH, "/html/body/div/div/div[2]/div[1]/div[2]/form/div[2]/div/div[1]/input"))).send_keys(PASSWORD)
-        except Exception as e:
-            pushalert("voila_searchretailer_status", "3", "voila_searchretailer")
-            # exit()
-        # click "SIGN IN" button
-        try:
-            wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,
-                                                   '#app > div > div.container__main > div.login > div.login-form > form > div:nth-child(3) > div > button'))).click()
-        except Exception as e:
-            pushalert("voila_searchretailer_status", "4", "voila_searchretailer")
-            # exit()
+            # 等待页面加载
+            time.sleep(seconds)
 
-        # sleep必须要有，否则cookies获取不全
-        time.sleep(20)
+            try:
+                wait.until(EC.presence_of_element_located(
+                    (By.XPATH, "//*[@id=\"app\"]/div/div[2]/div[1]/div[2]/form/div[1]/div/div[1]/input"))).send_keys(
+                    USERNAME)
+            except Exception as e:
+                pushalert("voila_searchretailer_status", "2", "voila_searchretailer")
+                # exit()
+            try:
+                wait.until(EC.presence_of_element_located(
+                    (By.XPATH, "/html/body/div/div/div[2]/div[1]/div[2]/form/div[2]/div/div[1]/input"))).send_keys(
+                    PASSWORD)
+            except Exception as e:
+                pushalert("voila_searchretailer_status", "3", "voila_searchretailer")
+                # exit()
+            # click "SIGN IN" button
+            try:
+                wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,
+                                                       '#app > div > div.container__main > div.login > div.login-form > form > div:nth-child(3) > div > button'))).click()
+            except Exception as e:
+                pushalert("voila_searchretailer_status", "4", "voila_searchretailer")
+                # exit()
 
-        cookies = driver.get_cookies()
-        for c in cookies:
-            requests_cookies[c['name']] = c['value']
+            # sleep必须要有，否则cookies获取不全
+            time.sleep(20)
 
-        if requests_cookies:
-            logging.info('Generate cookies successfully: %s', requests_cookies)
-        else:
-            # status=5 get cookies failed
-            pushalert("voila_searchretailer_status", "5", "voila_searchretailer")
-            logging.info("Generate cookies failed: %s", requests_cookies)
+            cookies = driver.get_cookies()
+            for c in cookies:
+                requests_cookies[c['name']] = c['value']
 
-        time.sleep(6 * 60 * 60)
-        driver.close()
+            if requests_cookies:
+                logging.info('Generate cookies successfully: %s', requests_cookies)
+            else:
+                # status=5 get cookies failed
+                pushalert("voila_searchretailer_status", "5", "voila_searchretailer")
+                logging.info("Generate cookies failed: %s", requests_cookies)
 
-def search_retailers():
-    while True:
-        total_retailers = ""
-        if not requests_cookies:
-            time.sleep(60)
-
-        headers = {
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
-            "sec-ch-ua-platform": "macOS",
-            "content-type": "application/json",
-            "referer": "https://creator.voila.love/bio/"
-        }
-
-        url = "https://creator.voila.love/_/voila/v2/retailers?page=1&count=30&sort=DEFAULT&weight=false&query=&isReturnAllData=true"
-        try:
-            response = requests.get(url, cookies=requests_cookies, headers=headers)
-            repsonse_data = json.loads(response.text)
-            total_retailers = repsonse_data['pagination'].get('total')
+            time.sleep(60 * 60 * 24 * 6)
+            driver.quit()
         except Exception as e:
             logging.info(e)
 
-        if response.status_code == 200 and total_retailers > 20000:
-            pushalert("voila_searchretailer_status", "0", "voila_searchretailer")
-            logging.info("search retailers successfully. response.status_code is: %s, total_retailers: %s",
-                         response.status_code, total_retailers)
-        else:
-            pushalert("voila_searchretailer_status", "6", "voila_searchretailer")
-            logging.info("search retailers failed. response.status_code is: %s, total_retailers: %s",
-                         response.status_code, total_retailers)
 
-        time.sleep(50)
+def search_retailers():
+    while True:
+        try:
+            total_retailers = ""
+            if not requests_cookies:
+                time.sleep(60)
+
+            headers = {
+                "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
+                "sec-ch-ua-platform": "macOS",
+                "content-type": "application/json",
+                "referer": "https://creator.voila.love/bio/"
+            }
+
+            url = "https://creator.voila.love/_/voila/v2/retailers?page=1&count=30&sort=DEFAULT&weight=false&query=&isReturnAllData=true&method=Percentage"
+            try:
+                response = requests.get(url, cookies=requests_cookies, headers=headers)
+                repsonse_data = json.loads(response.text)
+                total_retailers = repsonse_data['pagination'].get('total')
+            except Exception as e:
+                logging.info(e)
+
+            if response.status_code == 200 and total_retailers > 20000:
+                pushalert("voila_searchretailer_status", "0", "voila_searchretailer")
+                logging.info("search retailers successfully. response.status_code is: %s, total_retailers: %s",
+                             response.status_code, total_retailers)
+            else:
+                pushalert("voila_searchretailer_status", "6", "voila_searchretailer")
+                logging.info("search retailers failed. response.status_code is: %s, total_retailers: %s",
+                             response.status_code, total_retailers)
+
+            time.sleep(50)
+        except Exception as e:
+            logging.info(e)
 
 
 if __name__ == "__main__":
@@ -142,3 +178,4 @@ if __name__ == "__main__":
     p2 = threading.Thread(target=search_retailers)
     p1.start()
     p2.start()
+    delete_monitor_instance()

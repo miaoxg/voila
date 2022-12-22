@@ -4,6 +4,7 @@ import json
 import logging
 import platform
 import random
+import re
 import threading
 import time
 
@@ -41,7 +42,7 @@ def pushalert(metric_name="test", metric_value="-1", job_name="job_name"):
     )
 
 
-def dellete_monitor_instance():
+def delete_monitor_instance():
     try:
         # 先起新pod，再删除旧pod，因此有可能出现此函数在新pod中执行后，旧pod仍未删除还在推送旧pod上的metric的情况,所以延迟300s后删除
         time.sleep(300)
@@ -128,7 +129,7 @@ def login_get_cookies():
             pushalert("voila_searchproductretailers_status", "5", "voila_searchproductretailers")
             logging.info("Generate cookies failed: %s", requests_cookies)
 
-        time.sleep(6 * 60 * 60)
+        time.sleep(60 * 60 * 24 * 6)
         driver.quit()
 
 
@@ -161,7 +162,7 @@ def get_productretailers():
                 i += 1
             logging.info("retailers_name is %s", retailers_name)
 
-            if retailers_num > 50 and retailers_name.count("") < 1 and response.status_code == 200:
+            if retailers_num > 70 and retailers_name.count("") < 1 and response.status_code == 200:
                 pushalert("voila_searchproductretailers_status", "0", "voila_searchproductretailers")
                 logging.info("search product retailers successfully")
             else:
@@ -179,4 +180,4 @@ if __name__ == "__main__":
 
     p1.start()
     p2.start()
-    dellete_monitor_instance()
+    delete_monitor_instance()
